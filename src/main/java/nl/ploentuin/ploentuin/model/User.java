@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @Column(nullable = false)
     private String password;
@@ -30,9 +31,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public enum Role {
         USER,

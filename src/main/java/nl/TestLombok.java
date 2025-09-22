@@ -1,11 +1,11 @@
 package nl;
 
-import lombok.Getter;
-import lombok.Setter;
+import nl.ploentuin.ploentuin.model.User;
 
-@Getter
-@Setter
 public class TestLombok {
-    private String name;
-    private int age;
+    public static void main(String[] args) {
+        User user = new User();
+        user.setUsername("testuser");
+        System.out.println(user.getUsername());
+    }
 }
