@@ -3,6 +3,9 @@ package nl.ploentuin.ploentuin.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -37,6 +40,9 @@ public class User {
         MOD,
         ADMIN
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Planner> planners = new ArrayList<>();
 
     public User(String username, String password, String email, boolean emailVerified, Role role) {
         this.username = username;
