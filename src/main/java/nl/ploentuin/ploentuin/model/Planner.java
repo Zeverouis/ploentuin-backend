@@ -3,8 +3,6 @@ package nl.ploentuin.ploentuin.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,24 +10,19 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "planner")
-public class Planner {
+public class Planner extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private int rows;
@@ -37,15 +30,6 @@ public class Planner {
     @Column(nullable = false)
     private int columns;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
     public Planner(User user, String title, int rows, int columns) {
         this.user = user;
