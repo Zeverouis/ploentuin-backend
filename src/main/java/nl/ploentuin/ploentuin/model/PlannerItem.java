@@ -23,8 +23,10 @@ public class PlannerItem {
     @JoinColumn(name = "planner_id", nullable = false)
     private Planner planner;
 
+    @Column(name = "planner_row")
     private int row;
 
+    @Column(name = "planner_column")
     private int column;
 
     private String colour;
