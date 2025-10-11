@@ -26,14 +26,6 @@ public class Comment extends Timestamp {
     @JoinColumn(name = "post_id", nullable = false)
     private ForumPost forumPost;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    private String imageUrl;
-
-    public Comment(User user, ForumPost forumPost, String content){
-        this.user = user;
-        this.forumPost = forumPost;
-        this.content = content;
-    }
 }
