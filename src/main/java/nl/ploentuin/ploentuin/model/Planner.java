@@ -30,6 +30,8 @@ public class Planner extends Timestamp {
     @Column(nullable = false)
     private int columns;
 
+    //TODO: possibly rename for DB rows and columns
+
 
     public Planner(User user, String title, int rows, int columns) {
         this.user = user;

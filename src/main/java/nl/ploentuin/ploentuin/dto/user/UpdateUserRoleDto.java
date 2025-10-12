@@ -1,4 +1,4 @@
-package nl.ploentuin.ploentuin.dto;
+package nl.ploentuin.ploentuin.dto.user;
 
 import nl.ploentuin.ploentuin.model.User;
 

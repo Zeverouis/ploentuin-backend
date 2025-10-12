@@ -1,4 +1,4 @@
-package nl.ploentuin.ploentuin.dto;
+package nl.ploentuin.ploentuin.dto.user;
 
 public class UserRegisterDto {
     private String username;
