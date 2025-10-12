@@ -1,6 +1,6 @@
 package nl.ploentuin.ploentuin.dto;
 
 public class BanUserDto {
-    private int id;
+    private int userId;
     private String reason;
 }
