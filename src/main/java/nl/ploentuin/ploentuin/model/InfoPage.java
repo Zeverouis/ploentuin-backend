@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "info_page")
-public class InfoPage {
+public class InfoPage extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
