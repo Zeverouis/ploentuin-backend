@@ -17,6 +17,5 @@ public class BanUserDto {
 
 
     @NotBlank(message = "Geef een reden op")
-    @Getter
     private String reason;
 }
