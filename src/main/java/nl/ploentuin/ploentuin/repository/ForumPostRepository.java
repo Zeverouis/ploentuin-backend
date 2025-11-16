@@ -1,12 +1,13 @@
 package nl.ploentuin.ploentuin.repository;
 
 import nl.ploentuin.ploentuin.model.ForumPost;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ForumPostRepository {
+public interface ForumPostRepository extends JpaRepository<ForumPost, Integer> {
 
     List<ForumPost> findAllByForumCategoryId(int forumCategoryId);
 
