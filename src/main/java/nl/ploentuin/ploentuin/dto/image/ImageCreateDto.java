@@ -17,5 +17,4 @@ public class ImageCreateDto {
     private MultipartFile[] images;
 
     private String[] captions;
-
 }

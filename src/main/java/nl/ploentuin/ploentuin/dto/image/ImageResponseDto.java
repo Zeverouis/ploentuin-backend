@@ -21,5 +21,4 @@ public class ImageResponseDto {
     private String caption;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }

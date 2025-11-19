@@ -21,6 +21,9 @@ public interface PlannerItemRepository extends JpaRepository<PlannerItem, Intege
     List<PlannerItem> findAllByPlannerAndTypeAndName(Planner planner, PlannerItem.PlannerItemType type, String name);
 
     Optional<PlannerItem> findByIdAndPlannerAndPlannerUser(int id, Planner planner, User user);
+    Optional<PlannerItem> findByIdAndPlanner(int itemId, Planner planner);
+
+    boolean existsByIdAndPlanner(int itemId, Planner planner);
 
     void deleteAllByPlanner(Planner planner);
     void deleteAllByPlannerAndType(Planner planner, PlannerItem.PlannerItemType type);

@@ -16,4 +16,5 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     void deleteAllByParentIdAndParentType(int parentId, Image.ParentType parentType);
 
     boolean existsById(int id);
+    boolean existsByParentIdAndParentType(int parentId, Image.ParentType parentType);
 }
