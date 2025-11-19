@@ -22,7 +22,7 @@ public class User {
     private String username;
 
     @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PACKAGE)
     @Column(nullable = false)
     private String password;
 
