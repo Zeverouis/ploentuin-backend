@@ -1,5 +1,6 @@
 package nl.ploentuin.ploentuin.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -21,8 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.PACKAGE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 

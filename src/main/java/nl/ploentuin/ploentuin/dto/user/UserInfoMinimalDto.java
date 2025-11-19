@@ -13,5 +13,6 @@ public class UserInfoMinimalDto {
     private int id;
     private String username;
     private boolean emailVerified;
+    private String email;
     private Role role;
 }
