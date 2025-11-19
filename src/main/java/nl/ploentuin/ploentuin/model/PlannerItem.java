@@ -33,6 +33,8 @@ public class PlannerItem {
 
     private String imageUrl;
 
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlannerItemType type;
