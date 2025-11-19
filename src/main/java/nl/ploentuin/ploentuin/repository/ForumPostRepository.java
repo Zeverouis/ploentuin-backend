@@ -10,9 +10,10 @@ import java.util.List;
 public interface ForumPostRepository extends JpaRepository<ForumPost, Integer> {
 
     List<ForumPost> findAllByForumCategoryId(int forumCategoryId);
-
     List<ForumPost> findAllByUserId(int userId);
 
-    List<ForumPost> FindAllByForumCategoryIdOrderByCreatedAtAsc(int forumCategoryId);
+    List<ForumPost> findAllByForumCategoryIdOrderByUpdatedAtAsc(int forumCategoryId);
+    List<ForumPost> findAllByForumCategoryIdOrderByUpdatedAtDesc(int forumCategoryId);
 
+    List<ForumPost> findByTitleContainingIgnoreCase(String text);
 }

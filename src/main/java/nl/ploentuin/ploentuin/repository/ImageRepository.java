@@ -10,6 +10,10 @@ import java.util.List;
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     List<Image> findAllByParentIdAndParentType(int parentId, Image.ParentType parentType);
-
     List<Image> findAllByParentType(Image.ParentType parentType);
+    List<Image> findAllByParentId(int parentId);
+
+    void deleteAllByParentIdAndParentType(int parentId, Image.ParentType parentType);
+
+    boolean existsById(int id);
 }
