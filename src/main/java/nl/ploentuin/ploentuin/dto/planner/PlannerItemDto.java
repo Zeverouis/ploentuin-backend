@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlannerItemDto {
+    private int id;
     private int row;
     private int column;
     private String colour;

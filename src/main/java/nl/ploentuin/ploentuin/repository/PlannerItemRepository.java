@@ -2,9 +2,11 @@ package nl.ploentuin.ploentuin.repository;
 
 import nl.ploentuin.ploentuin.model.Planner;
 import nl.ploentuin.ploentuin.model.PlannerItem;
+import nl.ploentuin.ploentuin.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlannerItemRepository extends JpaRepository<PlannerItem, Integer> {
 
@@ -16,5 +18,10 @@ public interface PlannerItemRepository extends JpaRepository<PlannerItem, Intege
     List<PlannerItem> findAllByPlannerAndName(Planner planner, String name);
     List<PlannerItem> findAllByPlannerAndTypeAndName(Planner planner, PlannerItem.PlannerItemType type, String name);
 
+    Optional<PlannerItem> findByIdAndPlannerAndPlannerUser(int id, Planner planner, User user);
+
     void deleteAllByPlanner(Planner planner);
+    void deleteAllByPlannerAndType(Planner planner, PlannerItem.PlannerItemType type);
+    void deleteByIdAndPlannerAndPlannerUser(int id, Planner planner, User user);
+
 }
