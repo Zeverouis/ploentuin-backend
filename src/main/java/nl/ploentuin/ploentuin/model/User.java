@@ -28,7 +28,7 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
-    private boolean emailVerified;
+    private boolean emailVerified = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
