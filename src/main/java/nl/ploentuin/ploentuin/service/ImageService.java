@@ -18,8 +18,11 @@ import java.util.List;
 @Service
 public class ImageService {
 
-    @Autowired
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
+
+    public ImageService(ImageRepository imageRepository) {
+        this.imageRepository = imageRepository;
+    }
 
     private ImageResponseDto toDto(Image img) {
         return new ImageResponseDto(
