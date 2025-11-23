@@ -17,7 +17,7 @@ public class ImageResponseDto {
     private int id;
     private int parentId;
     private Image.ParentType parentType;
-    private String imageUrl;
+    private int userId;
     private String caption;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

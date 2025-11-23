@@ -13,8 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class ImageCreateDto {
 
-    @NotEmpty(message = "Mag niet leeg zijn")
     private MultipartFile[] images;
-
+    private String[] urls;
     private String[] captions;
 }

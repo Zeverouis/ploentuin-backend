@@ -21,6 +21,9 @@ public class Image extends Timestamp {
     @Column(nullable = false)
     private int parentId;
 
+    @Column(nullable = false)
+    private int userId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ParentType parentType;
@@ -31,15 +34,21 @@ public class Image extends Timestamp {
     @Column(length = 500)
     private String caption;
 
+    @Lob
+    @Column(nullable = false)
+    private byte[] data;
+
     public enum ParentType{
         COMMENT,
         FORUMPOST,
         INFOPAGE
     }
 
-    public Image(int parentId, ParentType parentType, String imageUrl) {
+    public Image(int parentId, int userId, String caption, ParentType parentType, byte[] data) {
         this.parentId = parentId;
+        this.userId = userId;
+        this.caption = caption;
         this.parentType = parentType;
-        this.imageUrl = imageUrl;
+        this.data = data;
     }
 }
