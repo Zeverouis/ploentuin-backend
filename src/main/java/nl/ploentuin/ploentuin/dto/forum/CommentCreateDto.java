@@ -15,6 +15,6 @@ public class CommentCreateDto {
 
     @NotBlank (message = "Mag niet leeg zijn")
     private String content;
-
     private MultipartFile[] images;
+    private String[] imageUrls;
 }

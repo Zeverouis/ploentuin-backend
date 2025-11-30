@@ -1,6 +1,5 @@
 package nl.ploentuin.ploentuin.dto.image;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageCreateDto {
 
     private MultipartFile[] images;
-    private String[] urls;
+    private String[] imageUrls;
     private String[] captions;
 }

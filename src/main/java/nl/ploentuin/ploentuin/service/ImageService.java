@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
@@ -98,6 +99,18 @@ public class ImageService {
         }
 
         imageRepository.delete(img);
+    }
+
+    public List<ImageResponseDto> getImagesByParent(int parentId, Image.ParentType parentType) {
+        return imageRepository.findAllByParentIdAndParentType(parentId, parentType)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteImagesByParent(int parentId, Image.ParentType parentType) {
+        List<Image> images = imageRepository.findAllByParentIdAndParentType(parentId, parentType);
+        imageRepository.deleteAll(images);
     }
 
     public ImageResponseDto updateCaption(int imageId, int userId, ImageUpdateDto dto) {

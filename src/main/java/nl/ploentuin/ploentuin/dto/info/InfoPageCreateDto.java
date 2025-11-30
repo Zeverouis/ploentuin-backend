@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +17,9 @@ public class InfoPageCreateDto {
 
     @NotBlank (message = "Er moet wel iets te lezen zijn")
     private String content;
-
+    private String[] captions;
+    private MultipartFile[] images;
+    private String[] imageUrls;
 
     private int infoCategoryId;
 }

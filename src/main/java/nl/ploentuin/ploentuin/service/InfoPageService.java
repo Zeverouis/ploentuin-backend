@@ -1,13 +1,17 @@
 package nl.ploentuin.ploentuin.service;
 
+import nl.ploentuin.ploentuin.dto.image.ImageCreateDto;
+import nl.ploentuin.ploentuin.dto.image.ImageResponseDto;
 import nl.ploentuin.ploentuin.dto.info.*;
+import nl.ploentuin.ploentuin.model.Image;
 import nl.ploentuin.ploentuin.model.InfoCategory;
 import nl.ploentuin.ploentuin.model.InfoPage;
 import nl.ploentuin.ploentuin.repository.InfoCategoryRepository;
 import nl.ploentuin.ploentuin.repository.InfoPageRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,11 +19,14 @@ public class InfoPageService {
 
     private final InfoPageRepository pageRepository;
     private final InfoCategoryRepository categoryRepository;
+    private final ImageService imageService;
 
     public InfoPageService(InfoPageRepository pageRepository,
-                           InfoCategoryRepository categoryRepository) {
+                           InfoCategoryRepository categoryRepository,
+                           ImageService imageService) {
         this.pageRepository = pageRepository;
         this.categoryRepository = categoryRepository;
+        this.imageService = imageService;
     }
 
     private InfoCategoryDto toCategoryDto(InfoCategory category) {
@@ -27,11 +34,13 @@ public class InfoPageService {
     }
 
     private InfoPageInfoDto toPageInfoDto(InfoPage page) {
+        List<ImageResponseDto> images = imageService.getImagesByParent(page.getId(), Image.ParentType.INFOPAGE);
         return new InfoPageInfoDto(
                 page.getId(),
                 page.getTitle(),
                 page.getContent(),
-                toCategoryDto(page.getInfoCategory())
+                toCategoryDto(page.getInfoCategory()),
+                images
         );
     }
 
@@ -85,7 +94,7 @@ public class InfoPageService {
 
     public InfoPageInfoDto getPageById(int id) {
         InfoPage page = pageRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Page not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Pagina niet gevonden"));
         return toPageInfoDto(page);
     }
 
@@ -110,6 +119,18 @@ public class InfoPageService {
         page.setInfoCategory(category);
 
         InfoPage saved = pageRepository.save(page);
+
+        if ((dto.getImages() != null && dto.getImages().length > 0) ||
+                (dto.getImageUrls() != null && dto.getImageUrls().length > 0)) {
+
+            ImageCreateDto imgDto = new ImageCreateDto();
+            imgDto.setImages(dto.getImages());
+            imgDto.setImageUrls(dto.getImageUrls());
+            imgDto.setCaptions(dto.getCaptions());
+
+            imageService.createImages(saved.getId(), Image.ParentType.INFOPAGE, 0, imgDto);
+        }
+
         return toPageInfoDto(saved);
     }
 
@@ -121,12 +142,26 @@ public class InfoPageService {
         if (dto.getContent() != null) page.setContent(dto.getContent());
 
         InfoPage updated = pageRepository.save(page);
+
+        if ((dto.getImages() != null && dto.getImages().length > 0) ||
+                (dto.getImageUrls() != null && dto.getImageUrls().length > 0)) {
+
+            ImageCreateDto imgDto = new ImageCreateDto();
+            imgDto.setImages(dto.getImages());
+            imgDto.setImageUrls(dto.getImageUrls());
+            imgDto.setCaptions(dto.getCaptions());
+
+            imageService.createImages(updated.getId(), Image.ParentType.INFOPAGE, 0, imgDto);
+        }
+
         return toPageInfoDto(updated);
     }
 
     public void deletePage(int pageId) {
         InfoPage page = pageRepository.findById(pageId)
                 .orElseThrow(() -> new IllegalArgumentException("Pagina niet gevonden"));
+
+        imageService.deleteImagesByParent(page.getId(), Image.ParentType.INFOPAGE);
         pageRepository.delete(page);
     }
 
