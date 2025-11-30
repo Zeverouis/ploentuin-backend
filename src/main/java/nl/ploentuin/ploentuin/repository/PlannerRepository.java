@@ -20,6 +20,9 @@ public interface PlannerRepository extends JpaRepository<Planner,Integer> {
     List<Planner> findAllByUserOrderByCreatedAtDesc(User user);
     List<Planner> findAllByUserOrderByCreatedAtAsc(User user);
 
+    Optional<Planner> findByAnonymousToken(String token);
+    boolean existsByAnonymousToken(String token);
+
     boolean existsById(int id);
     boolean existsByIdAndUser(int id, User user);
 }

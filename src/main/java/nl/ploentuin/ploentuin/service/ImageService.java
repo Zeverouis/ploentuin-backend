@@ -5,7 +5,6 @@ import nl.ploentuin.ploentuin.dto.image.ImageCreateDto;
 import nl.ploentuin.ploentuin.dto.image.ImageUpdateDto;
 import nl.ploentuin.ploentuin.model.Image;
 import nl.ploentuin.ploentuin.repository.ImageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

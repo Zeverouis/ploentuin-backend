@@ -15,5 +15,5 @@ public class UpdatePlannerDto {
     private String title;
     private int rows;
     private int columns;
-    private List<PlannerItemDto> items;
+    private List<PlannerItemPlacementDto> items;
 }

@@ -3,7 +3,6 @@ package nl.ploentuin.ploentuin.service;
 import nl.ploentuin.ploentuin.dto.user.*;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
