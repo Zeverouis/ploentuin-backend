@@ -79,7 +79,7 @@ public class PlannerService {
 
     public PlannerInfoDto getPlanner(int plannerId) {
         Planner planner = plannerRepository.findById(plannerId)
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
 
         List<PlannerItemPlacement> placements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
         return toInfoDto(planner, placements);
@@ -87,7 +87,7 @@ public class PlannerService {
 
     public PlannerInfoDto getPlannerByAnonymousToken(String token) {
         Planner planner = plannerRepository.findByAnonymousToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
 
         List<PlannerItemPlacement> placements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
         return toInfoDto(planner, placements);
@@ -96,9 +96,9 @@ public class PlannerService {
     public PlannerInfoDto updatePlanner(int plannerId, UpdatePlannerDto dto, User user, String anonymousToken) {
         Planner planner = (user != null)
                 ? plannerRepository.findByIdAndUser(plannerId, user)
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found"))
+                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"))
                 : plannerRepository.findByAnonymousToken(anonymousToken)
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
 
         if (dto.getTitle() != null) planner.setTitle(dto.getTitle());
         planner.setRows(dto.getRows());
@@ -114,7 +114,7 @@ public class PlannerService {
                 placement.setPlanner(planner);
                 placement.setCatalogItem(
                         catalogRepository.findById(itemDto.getCatalogItem().getId())
-                                .orElseThrow(() -> new IllegalArgumentException("Catalog item not found"))
+                                .orElseThrow(() -> new IllegalArgumentException("Catalog item niet gevonden"))
                 );
                 placement.setRow(itemDto.getRow());
                 placement.setColumn(itemDto.getColumn());
@@ -129,7 +129,7 @@ public class PlannerService {
 
     public void deletePlanner(int plannerId) {
         Planner planner = plannerRepository.findById(plannerId)
-                .orElseThrow(() -> new IllegalArgumentException("Planner not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
 
         placementRepository.deleteAllByPlanner(planner);
         plannerRepository.delete(planner);
@@ -140,7 +140,7 @@ public class PlannerService {
                 .orElseThrow(() -> new IllegalArgumentException("Planner not found"));
 
         PlannerItemCatalog catalog = catalogRepository.findById(catalogItemId)
-                .orElseThrow(() -> new IllegalArgumentException("Catalog item not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Catalog item niet gevonden"));
 
         PlannerItemPlacement placement = new PlannerItemPlacement();
         placement.setPlanner(planner);
@@ -154,7 +154,7 @@ public class PlannerService {
 
     public void removePlacement(int placementId) {
         if (!placementRepository.existsById(placementId))
-            throw new IllegalArgumentException("Placement not found");
+            throw new IllegalArgumentException("Placement niet gevonden");
 
         placementRepository.deleteById(placementId);
     }

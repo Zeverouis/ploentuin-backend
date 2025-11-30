@@ -55,7 +55,7 @@ public class ImageService {
                     imageRepository.save(img);
                     savedImages.add(toDto(img));
                 } catch (IOException e) {
-                    System.err.println("Failed to process uploaded file " + file.getOriginalFilename());
+                    System.err.println("Kon file niet uploaden" + file.getOriginalFilename());
                 }
             }
         }
@@ -77,13 +77,13 @@ public class ImageService {
                     imageRepository.save(img);
                     savedImages.add(toDto(img));
                 } catch (IOException e) {
-                    System.err.println("Failed to download image from URL: " + urlStr);
+                    System.err.println("Kon image niet downloaden vanuit URL" + urlStr);
                 }
             }
         }
 
         if (savedImages.isEmpty()) {
-            throw new IllegalArgumentException("No valid images provided");
+            throw new IllegalArgumentException("Geen image toegevoegd");
         }
 
         return savedImages;
