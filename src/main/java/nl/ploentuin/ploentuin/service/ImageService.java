@@ -61,7 +61,7 @@ public class ImageService {
             }
         }
 
-        String[] urls = dto.getUrls();
+        String[] urls = dto.getImageUrls();
         if (urls != null) {
             for (int i = 0; i < urls.length; i++) {
                 String urlStr = urls[i];
