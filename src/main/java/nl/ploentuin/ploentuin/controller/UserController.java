@@ -1,5 +1,8 @@
 package nl.ploentuin.ploentuin.controller;
 
+import nl.ploentuin.ploentuin.dto.api.ApiResponse;
+import nl.ploentuin.ploentuin.dto.api.ResponseHelper;
+import nl.ploentuin.ploentuin.dto.user.UserInfoMinimalDto;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +28,17 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
-            return ResponseEntity.badRequest().body("Gebruikersnaam bestaat al");
+            return ResponseHelper.badRequest("Gebruikersnaam bestaat al");
         }
         if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Emailadress bestaat al");
+            return ResponseHelper.badRequest("Emailadress bestaat al");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(User.Role.USER);
         userRepository.save(user);
 
-        return ResponseEntity.ok("User geregistreerd");
+        return ResponseHelper.ok(null,"User geregistreerd");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,34 +49,56 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or @securityHelper.isCurrentUser(#id)")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<User>> getUser(@PathVariable int id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return ResponseHelper.ok(user, "User gevonden");
+        } else {
+            return ResponseHelper.notFound("User niet gevonden");
+        }
     }
+
+    @GetMapping("/public/{username}")
+    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> getPublicUser(@PathVariable String username) {
+        return userRepository.findByUsernameIgnoreCase(username)
+                .map(user -> {
+                    UserInfoMinimalDto dto = new UserInfoMinimalDto(
+                            user.getId(),
+                            user.getUsername(),
+                            user.isEmailVerified(),
+                            null,
+                            user.getRole()
+                    );
+                    return ResponseHelper.ok(dto, "User gevonden!");
+                })
+                .orElseGet(() -> ResponseHelper.notFound("User niet gevonden"));
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/role")
     public ResponseEntity<?> updateUserRole(@PathVariable int id, @RequestParam User.Role role) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseHelper.notFound("User niet gevonden");
         }
 
         User user = optionalUser.get();
         user.setRole(role);
         userRepository.save(user);
-        return ResponseEntity.ok("User rol aangepast");
+        return ResponseHelper.ok(null,"User rol aangepast " + role);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int id) {
         if (!userRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseHelper.notFound("User niet gevonden");
         }
 
         userRepository.deleteById(id);
-        return ResponseEntity.ok("User verwijderd");
+        return ResponseHelper.ok(null, "User verwijderd");
     }
 }

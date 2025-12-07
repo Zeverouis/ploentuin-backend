@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface PlannerItemPlacementRepository extends JpaRepository<PlannerItemPlacement, Integer> {
     List<PlannerItemPlacement> findAllByPlannerOrderByRowAscColumnAsc(Planner planner);
+
     void deleteAllByPlanner(Planner planner);
 }
