@@ -49,22 +49,32 @@ public class MySecurityConfig {
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN")
-                        .requestMatchers("/admins/**").hasRole("ADMIN")
-                        .requestMatchers("/users/{id}/role").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers("/users/mod/**").hasAnyRole("ADMIN", "MOD")
-
-
-                        .requestMatchers(HttpMethod.GET, "/info").hasAnyRole("USER", "MOD", "ADMIN")
-                        .requestMatchers("/users/**").hasAnyRole("USER", "MOD", "ADMIN")
-
-
+                        .requestMatchers(HttpMethod.GET, "/info/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/forums/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/planners/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/planners/**").permitAll()
                         .requestMatchers("/authenticate").permitAll()
                         .requestMatchers("/users/register").permitAll()
+                        .requestMatchers("/users/forgot-password").permitAll()
 
-                        .anyRequest().denyAll()
+                        .requestMatchers("/admins/**").hasRole("ADMIN")
+
+                        .requestMatchers("/users/reset-password").authenticated()
+                        .requestMatchers("/users/email/change").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/forums/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/forums/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/forums/**").authenticated()
+                        .requestMatchers("/planners/**/claim").authenticated()
+                        .requestMatchers("/planners/save").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/planners/**").authenticated()
+
+
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS

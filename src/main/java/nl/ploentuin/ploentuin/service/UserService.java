@@ -3,11 +3,14 @@ package nl.ploentuin.ploentuin.service;
 import nl.ploentuin.ploentuin.dto.user.*;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
+import nl.ploentuin.ploentuin.security.JwtUtil;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,10 +18,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       EmailService emailService, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     private UserInfoMinimalDto toMinimalDto(User u) {
@@ -46,21 +54,30 @@ public class UserService {
         return toMinimalDto(savedUser);
     }
 
+    public String generateJwtForUser(User user) {
+        return jwtUtil.generateToken(new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        ));
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Ongeldige of verlopen token"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        userRepository.save(user);
+    }
+
     public Optional<UserInfoMinimalDto> findByUsername(String username) {
         return userRepository.findByUsernameIgnoreCase(username)
                 .map(this::toMinimalDto);
     }
 
-    public Optional<UserInfoMinimalDto> findByEmail(String email) {
-        return userRepository.findByEmailIgnoreCase(email)
-                .map(this::toMinimalDto);
-    }
-
-    public List<UserInfoMinimalDto> findAllByRole(User.Role role) {
-        return userRepository.findAllByRole(role)
-                .stream()
-                .map(this::toMinimalDto)
-                .collect(Collectors.toList());
+    public Optional<User> findUserEntityByUsername(String username) {
+        return userRepository.findByUsernameIgnoreCase(username);
     }
 
     public UserInfoMinimalDto updateRole(int userId, UpdateUserRoleDto dto) {
@@ -104,5 +121,27 @@ public class UserService {
                 .stream()
                 .map(this::toMinimalDto)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<UserInfoMinimalDto> getUserById(int userId) {
+        return userRepository.findById(userId).map(this::toMinimalDto);
+    }
+
+    public void deleteUser(int userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User niet gevonden");
+        }
+        userRepository.deleteById(userId);
+    }
+
+    public void sendPasswordReset(String email) {
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email niet gevonden"));
+
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
     }
 }

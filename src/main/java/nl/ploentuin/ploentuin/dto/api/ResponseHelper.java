@@ -1,6 +1,5 @@
 package nl.ploentuin.ploentuin.dto.api;
 
-import org.aspectj.bridge.IMessage;
 import org.springframework.http.ResponseEntity;
 
 public class ResponseHelper {
