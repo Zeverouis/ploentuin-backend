@@ -17,6 +17,7 @@ public class PlannerInfoDto {
     private String title;
     private int rows;
     private int columns;
+    private int userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<PlannerItemPlacementDto> items;

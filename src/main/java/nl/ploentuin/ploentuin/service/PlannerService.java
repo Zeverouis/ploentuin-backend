@@ -8,6 +8,7 @@ import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.PlannerItemCatalogRepository;
 import nl.ploentuin.ploentuin.repository.PlannerItemPlacementRepository;
 import nl.ploentuin.ploentuin.repository.PlannerRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -61,6 +62,7 @@ public class PlannerService {
         info.setColumns(planner.getColumns());
         info.setCreatedAt(planner.getCreatedAt());
         info.setUpdatedAt(planner.getUpdatedAt());
+        info.setUserId(planner.getUser() != null ? planner.getUser().getId() : -1);
         info.setItems(placementDtos);
         return info;
     }
@@ -91,6 +93,25 @@ public class PlannerService {
 
         List<PlannerItemPlacement> placements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
         return toInfoDto(planner, placements);
+    }
+
+    public List<PlannerListDto> getPlanners(User user, String sortBy, boolean ascending) {
+        String sortField = "updatedAt".equals(sortBy) ? "updatedAt" : "createdAt";
+        Sort sort = Sort.by(ascending ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+
+        return plannerRepository.findAllByUser(user, sort)
+                .stream()
+                .map(p -> new PlannerListDto(
+                        p.getId(),
+                        p.getTitle(),
+                        p.getUpdatedAt(),
+                        p.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    public List<PlannerListDto> getPlanners(User user) {
+        return getPlanners(user, "updated", false);
     }
 
     public PlannerInfoDto updatePlanner(int plannerId, UpdatePlannerDto dto, User user, String anonymousToken) {

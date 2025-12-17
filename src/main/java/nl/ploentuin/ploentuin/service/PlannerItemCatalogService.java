@@ -53,6 +53,9 @@ public class PlannerItemCatalogService {
     }
 
     public void deleteItem(int id) {
+        if (!catalogRepository.existsById(id)) {
+            throw new IllegalArgumentException("Catalog item niet gevonden");
+        }
         catalogRepository.deleteById(id);
     }
 }
