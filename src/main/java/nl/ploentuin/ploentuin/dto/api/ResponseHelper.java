@@ -15,4 +15,12 @@ public class ResponseHelper {
     public static <T> ResponseEntity<ApiResponse<T>> badRequest(String message) {
         return ResponseEntity.status(400).body(new ApiResponse<>(null, message));
     }
+
+    public static <T> ResponseEntity<ApiResponse<T>> forbidden(String message) {
+        return ResponseEntity.status(403).body(new ApiResponse<>(null, message));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> created(String message) {
+        return ResponseEntity.status(201).body(new ApiResponse<>(null, message));
+    }
 }

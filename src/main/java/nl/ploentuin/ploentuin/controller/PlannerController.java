@@ -1,12 +1,12 @@
 package nl.ploentuin.ploentuin.controller;
 
+import nl.ploentuin.ploentuin.dto.api.ResponseHelper;
 import nl.ploentuin.ploentuin.dto.planner.*;
 import nl.ploentuin.ploentuin.model.PlannerItemCatalog;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import nl.ploentuin.ploentuin.service.PlannerItemCatalogService;
 import nl.ploentuin.ploentuin.service.PlannerService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -70,15 +70,16 @@ public class PlannerController {
     }
 
     @DeleteMapping("/{plannerId}/items/{placementId}")
-    public void deletePlacement(@PathVariable int plannerId,
+    public ResponseEntity<?> deletePlacement(@PathVariable int plannerId,
                                 @PathVariable int placementId,
                                 Authentication auth) {
         User user = getCurrentUser(auth);
         PlannerInfoDto planner = plannerService.getPlanner(plannerId);
         if (user != null && planner.getUserId() != user.getId()) {
-            throw new IllegalArgumentException("Deze planner is niet van jouw!");
+            return ResponseHelper.forbidden("Deze planner is niet van jouw!");
         }
         plannerService.removePlacement(placementId);
+        return ResponseHelper.ok(null, "Object verwijderd.");
     }
 
     @GetMapping("/planner/catalog")
@@ -86,7 +87,7 @@ public class PlannerController {
         return plannerItemCatalogService.getAllItems();
     }
 
-    @GetMapping("/planner/catalog?type=XYZ")
+    @GetMapping("/planner/catalog/type")
     public List<PlannerItemCatalogDto> getPlannerCatalogByType(
             @RequestParam PlannerItemCatalog.PlannerItemType type)
     {
@@ -95,41 +96,38 @@ public class PlannerController {
 
     @GetMapping("/planner/catalog/{id}")
     public PlannerItemCatalogDto getPlannerCatalogById(
-            @RequestParam int id)
+            @PathVariable int id)
     {
         return plannerItemCatalogService.getById(id);
     }
 
     @PostMapping("/catalog")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> createCatalogItem(
+    public ResponseEntity<?> createCatalogItem(
             @RequestBody PlannerItemCatalog item,
             Authentication auth) {
 
         User user = getCurrentUser(auth);
         if (user == null || user.getRole() != User.Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Ge bent geen admin of wel?");
+            return ResponseHelper.forbidden("Ge bent geen admin of wel?");
         }
 
         plannerItemCatalogService.createItem(item);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Catalog item succesvol aangemaakt");
+        return ResponseHelper.created("Catalog item succesvol aangemaakt");
     }
 
 
     @DeleteMapping("/catalog")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteCatalogItem(@RequestBody PlannerItemCatalogDto item, Authentication auth) {
+    public ResponseEntity<?> deleteCatalogItem(@RequestBody PlannerItemCatalogDto item, Authentication auth) {
         User user = getCurrentUser(auth);
         if (user == null || user.getRole() != User.Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ge bent geen admin of wel?");
+            return ResponseHelper.forbidden("Ge bent geen admin of wel?");
         }
 
         plannerItemCatalogService.deleteItem(item.getId());
-        return ResponseEntity.ok("Catalog item succesvol verwijderd");
+        return ResponseHelper.ok(null, "Catalog item succesvol verwijderd");
     }
-
 
 
     private User getCurrentUser(Authentication auth) {
