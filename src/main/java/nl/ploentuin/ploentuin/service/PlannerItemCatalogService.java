@@ -49,7 +49,7 @@ public class PlannerItemCatalogService {
     public PlannerItemCatalogDto getById(int id) {
         return catalogRepository.findById(id)
                 .map(this::toDto)
-                .orElseThrow(() -> new IllegalArgumentException("Catalog item niet gevonden"));
+                .orElse(null);
     }
 
     public void deleteItem(int id) {

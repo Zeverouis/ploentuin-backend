@@ -57,8 +57,13 @@ public class PlannerController {
     }
 
     @DeleteMapping("/{plannerId}")
-    public void deletePlanner(@PathVariable int plannerId) {
-        plannerService.deletePlanner(plannerId);
+    public ResponseEntity<?> deletePlanner(@PathVariable int plannerId) {
+        try {
+            plannerService.deletePlanner(plannerId);
+            return ResponseHelper.ok(null, "Planner succesvol verwijderd");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
     }
 
     @PostMapping("/{plannerId}/place")
