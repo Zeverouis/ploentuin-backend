@@ -17,6 +17,7 @@ public class InfoPageCreateDto {
 
     @NotBlank (message = "Er moet wel iets te lezen zijn")
     private String content;
+
     private String[] captions;
     private MultipartFile[] images;
     private String[] imageUrls;
