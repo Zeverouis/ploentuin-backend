@@ -13,9 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findAllByUserId(int userId);
 
     List<Comment> findAllByForumPostIdOrderByCreatedAtAsc(int forumPostId);
-    List<Comment> findAllByForumPostIdOrderByCreatedAtDesc(int forumPostId);
-
-    boolean existsByIdAndUserId(int id, int userId);
 
     void deleteAllByForumPostId(int forumPostId);
     void deleteAllByUserId(int userId);

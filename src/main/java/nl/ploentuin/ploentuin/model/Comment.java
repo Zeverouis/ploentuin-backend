@@ -29,5 +29,3 @@ public class Comment extends Timestamp {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 }
-
-//TODO: Add names for the JoinColumns here + in any other model

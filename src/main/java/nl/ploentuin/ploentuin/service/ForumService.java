@@ -12,7 +12,6 @@ import nl.ploentuin.ploentuin.repository.CommentRepository;
 import nl.ploentuin.ploentuin.repository.ForumCategoryRepository;
 import nl.ploentuin.ploentuin.repository.ForumPostRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +82,11 @@ public class ForumService {
                 .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
     }
 
+    public ForumCategory getCategoryByName(String categoryName) {
+        return categoryRepository.findByCategoryName(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
+    }
+
     public ForumPostResponseDto createPost(ForumPostCreateDto dto, User user, int categoryId) {
         ForumCategory category = getCategoryById(categoryId);
 
@@ -112,8 +116,29 @@ public class ForumService {
         return toPostDto(post);
     }
 
+    public List<ForumPostResponseDto> getPostsByUser(int userId) {
+        return postRepository.findAllByUserId(userId)
+                .stream()
+                .map(this::toPostDto)
+                .collect(Collectors.toList());
+    }
+
     public List<ForumPostResponseDto> getPostsByCategory(int categoryId) {
         return postRepository.findAllByForumCategoryIdOrderByUpdatedAtDesc(categoryId)
+                .stream()
+                .map(this::toPostDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ForumPostResponseDto> getPostsByCategoryUnordered(int categoryId) {
+        return postRepository.findAllByForumCategoryId(categoryId)
+                .stream()
+                .map(this::toPostDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ForumPostResponseDto> searchPostsByTitle(String text) {
+        return postRepository.findByTitleContainingIgnoreCase(text)
                 .stream()
                 .map(this::toPostDto)
                 .collect(Collectors.toList());
@@ -186,6 +211,13 @@ public class ForumService {
         return toCommentDto(saved);
     }
 
+    public List<CommentResponseDto> getCommentsByUser(int userId) {
+        return commentRepository.findAllByUserId(userId)
+                .stream()
+                .map(this::toCommentDto)
+                .collect(Collectors.toList());
+    }
+
     public void deleteComment(int commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment niet gevonden"));
@@ -196,5 +228,13 @@ public class ForumService {
 
         imageService.deleteImagesByParent(comment.getId(), Image.ParentType.COMMENT);
         commentRepository.delete(comment);
+    }
+
+    public void deleteAllCommentsByUser(int userId) {
+        List<Comment> comments = commentRepository.findAllByUserId(userId);
+        for (Comment comment : comments) {
+            imageService.deleteImagesByParent(comment.getId(), Image.ParentType.COMMENT);
+        }
+        commentRepository.deleteAllByUserId(userId);
     }
 }
