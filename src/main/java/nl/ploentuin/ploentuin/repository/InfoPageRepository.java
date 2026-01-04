@@ -11,18 +11,14 @@ import java.util.List;
 public interface InfoPageRepository extends JpaRepository <InfoPage, Integer> {
 
     List<InfoPage> findAllByInfoCategory(InfoCategory category);
-    List<InfoPage> findAllByInfoCategoryOrderByUpdatedAtAsc(InfoCategory category);
-    List<InfoPage> findAllByInfoCategoryOrderByUpdatedAtDesc(InfoCategory category);
     List<InfoPage> findAllByOrderByUpdatedAtDesc();
     List<InfoPage> findAllByInfoCategoryOrderByTitleAsc(InfoCategory category);
-    List<InfoPage> findAllByInfoCategoryOrderByTitleDesc(InfoCategory category);
 
     List<InfoPage> findByTitleContainingIgnoreCase(String title);
 
-    List<InfoPage> findByContentContainingIgnoreCase(String text);
+    List<InfoPage> findBySectionOneContentContainingIgnoreCaseOrSectionTwoContentContainingIgnoreCaseOrSectionThreeContentContainingIgnoreCaseOrSectionFourContentContainingIgnoreCase(String sectionOneContent, String sectionTwoContent, String sectionThreeContent, String sectionFourContent);
 
     boolean existsByTitleAndInfoCategory(String title, InfoCategory category);
-    boolean existsByTitleAndInfoCategoryAndIdNot(String title, InfoCategory category, int id);
 
     void deleteAllByInfoCategory(InfoCategory category);
 }

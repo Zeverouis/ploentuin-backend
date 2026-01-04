@@ -26,5 +26,29 @@ public class InfoPage extends Timestamp {
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String tldr;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionOneTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionOneContent;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionTwoTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionTwoContent;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionThreeTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionThreeContent;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionFourTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String sectionFourContent;
 }

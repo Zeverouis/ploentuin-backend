@@ -12,11 +12,24 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class InfoPageCreateDto {
-    @NotBlank (message = "Voeg een titel toe")
+
+    @NotBlank(message = "Voeg een titel toe")
     private String title;
 
-    @NotBlank (message = "Er moet wel iets te lezen zijn")
-    private String content;
+    @NotBlank(message = "Voeg een TLDR toe")
+    private String tldr;
+
+    private String sectionOneTitle;
+    private String sectionOneContent;
+
+    private String sectionTwoTitle;
+    private String sectionTwoContent;
+
+    private String sectionThreeTitle;
+    private String sectionThreeContent;
+
+    private String sectionFourTitle;
+    private String sectionFourContent;
 
     private String[] captions;
     private MultipartFile[] images;

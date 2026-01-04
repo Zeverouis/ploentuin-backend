@@ -35,11 +35,22 @@ public class InfoPageService {
 
     private InfoPageInfoDto toPageInfoDto(InfoPage page) {
         List<ImageResponseDto> images = imageService.getImagesByParent(page.getId(), Image.ParentType.INFOPAGE);
+
         return new InfoPageInfoDto(
                 page.getId(),
                 page.getTitle(),
-                page.getContent(),
+                page.getTldr(),
                 toCategoryDto(page.getInfoCategory()),
+
+                page.getSectionOneTitle(),
+                page.getSectionOneContent(),
+                page.getSectionTwoTitle(),
+                page.getSectionTwoContent(),
+                page.getSectionThreeTitle(),
+                page.getSectionThreeContent(),
+                page.getSectionFourTitle(),
+                page.getSectionFourContent(),
+
                 images
         );
     }
@@ -98,14 +109,6 @@ public class InfoPageService {
         return toPageInfoDto(page);
     }
 
-    public List<InfoPageMinimalDto> getPagesByCategory(int categoryId) {
-        InfoCategory category = getCategoryById(categoryId);
-        return pageRepository.findAllByInfoCategoryOrderByTitleAsc(category)
-                .stream()
-                .map(this::toMinimalDto)
-                .collect(Collectors.toList());
-    }
-
     public InfoPageInfoDto createPage(InfoPageCreateDto dto) {
         InfoCategory category = getCategoryById(dto.getInfoCategoryId());
 
@@ -115,7 +118,19 @@ public class InfoPageService {
 
         InfoPage page = new InfoPage();
         page.setTitle(dto.getTitle());
-        page.setContent(dto.getContent());
+        page.setTldr(dto.getTldr());
+
+        page.setSectionOneTitle(dto.getSectionOneTitle());
+        page.setSectionOneContent(dto.getSectionOneContent());
+
+        page.setSectionTwoTitle(dto.getSectionTwoTitle());
+        page.setSectionTwoContent(dto.getSectionTwoContent());
+
+        page.setSectionThreeTitle(dto.getSectionThreeTitle());
+        page.setSectionThreeContent(dto.getSectionThreeContent());
+
+        page.setSectionFourTitle(dto.getSectionFourTitle());
+        page.setSectionFourContent(dto.getSectionFourContent());
         page.setInfoCategory(category);
 
         InfoPage saved = pageRepository.save(page);
@@ -139,7 +154,19 @@ public class InfoPageService {
                 .orElseThrow(() -> new IllegalArgumentException("Pagina niet gevonden"));
 
         if (dto.getTitle() != null) page.setTitle(dto.getTitle());
-        if (dto.getContent() != null) page.setContent(dto.getContent());
+        if (dto.getTldr() != null) page.setTldr(dto.getTldr());
+
+        if (dto.getSectionOneTitle() != null) page.setSectionOneTitle(dto.getSectionOneTitle());
+        if (dto.getSectionOneContent() != null) page.setSectionOneContent(dto.getSectionOneContent());
+
+        if (dto.getSectionTwoTitle() != null) page.setSectionTwoTitle(dto.getSectionTwoTitle());
+        if (dto.getSectionTwoContent() != null) page.setSectionTwoContent(dto.getSectionTwoContent());
+
+        if (dto.getSectionThreeTitle() != null) page.setSectionThreeTitle(dto.getSectionThreeTitle());
+        if (dto.getSectionThreeContent() != null) page.setSectionThreeContent(dto.getSectionThreeContent());
+
+        if (dto.getSectionFourTitle() != null) page.setSectionFourTitle(dto.getSectionFourTitle());
+        if (dto.getSectionFourContent() != null) page.setSectionFourContent(dto.getSectionFourContent());
 
         InfoPage updated = pageRepository.save(page);
 
@@ -173,8 +200,20 @@ public class InfoPageService {
     }
 
     public List<InfoPageMinimalDto> searchPagesByContent(String content) {
-        return pageRepository.findByContentContainingIgnoreCase(content)
+        return pageRepository
+                .findBySectionOneContentContainingIgnoreCaseOrSectionTwoContentContainingIgnoreCaseOrSectionThreeContentContainingIgnoreCaseOrSectionFourContentContainingIgnoreCase(
+                        content, content, content, content
+                )
                 .stream()
+                .map(this::toMinimalDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<InfoPageMinimalDto> getPagesByCategory(int categoryId) {
+        InfoCategory category = getCategoryById(categoryId);
+        List<InfoPage> pages = pageRepository.findAllByInfoCategory(category);
+        
+        return pages.stream()
                 .map(this::toMinimalDto)
                 .collect(Collectors.toList());
     }
