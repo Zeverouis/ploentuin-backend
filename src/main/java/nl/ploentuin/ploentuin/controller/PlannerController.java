@@ -6,7 +6,9 @@ import nl.ploentuin.ploentuin.model.PlannerItemCatalog;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import nl.ploentuin.ploentuin.service.PlannerItemCatalogService;
+import nl.ploentuin.ploentuin.service.PlannerPngExportService;
 import nl.ploentuin.ploentuin.service.PlannerService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,12 +23,14 @@ public class PlannerController {
     private final PlannerService plannerService;
     private final PlannerItemCatalogService plannerItemCatalogService;
     private final UserRepository userRepository;
+    private final PlannerPngExportService plannerPngExportService;
 
     public PlannerController(PlannerService plannerService, PlannerItemCatalogService itemCatalogService,
-                             UserRepository userRepository) {
+                             UserRepository userRepository, PlannerPngExportService plannerPngExportService) {
         this.plannerService = plannerService;
         this.plannerItemCatalogService = itemCatalogService;
         this.userRepository = userRepository;
+        this.plannerPngExportService = plannerPngExportService;
     }
 
     @PostMapping
@@ -132,6 +136,16 @@ public class PlannerController {
 
         plannerItemCatalogService.deleteItem(item.getId());
         return ResponseHelper.ok(null, "Catalog item succesvol verwijderd");
+    }
+
+    @GetMapping("/{plannerId}/export/png")
+    public ResponseEntity<byte[]> exportPlannerPng(@PathVariable int plannerId) {
+        byte[] png = plannerPngExportService.export(plannerId);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"planner-" + plannerId + ".png\"")
+                .contentType(MediaType.IMAGE_PNG)
+                .body(png);
     }
 
 
