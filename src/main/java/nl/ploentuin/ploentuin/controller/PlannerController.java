@@ -5,9 +5,7 @@ import nl.ploentuin.ploentuin.dto.planner.*;
 import nl.ploentuin.ploentuin.model.PlannerItemCatalog;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
-import nl.ploentuin.ploentuin.service.PlannerItemCatalogService;
-import nl.ploentuin.ploentuin.service.PlannerPngExportService;
-import nl.ploentuin.ploentuin.service.PlannerService;
+import nl.ploentuin.ploentuin.service.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,13 +22,17 @@ public class PlannerController {
     private final PlannerItemCatalogService plannerItemCatalogService;
     private final UserRepository userRepository;
     private final PlannerPngExportService plannerPngExportService;
+    private final PlannerGridBuilderHelper gridBuilder;
+    private final PlannerExportService plannerExportService;
 
     public PlannerController(PlannerService plannerService, PlannerItemCatalogService itemCatalogService,
-                             UserRepository userRepository, PlannerPngExportService plannerPngExportService) {
+                             UserRepository userRepository, PlannerPngExportService plannerPngExportService, PlannerGridBuilderHelper gridBuilder, PlannerExportService plannerExportService) {
         this.plannerService = plannerService;
         this.plannerItemCatalogService = itemCatalogService;
         this.userRepository = userRepository;
         this.plannerPngExportService = plannerPngExportService;
+        this.gridBuilder = gridBuilder;
+        this.plannerExportService = plannerExportService;
     }
 
     @PostMapping
@@ -147,6 +149,45 @@ public class PlannerController {
                 .contentType(MediaType.IMAGE_PNG)
                 .body(png);
     }
+
+    @GetMapping("/{plannerId}/export/{format}")
+    public ResponseEntity<?> exportPlanner(@PathVariable int plannerId,
+                                           @PathVariable String format) {
+        try {
+            PlannerInfoDto planner = plannerService.getPlanner(plannerId);
+            PlannerItemPlacementDto[][] grid = gridBuilder.buildGrid(planner);
+
+            byte[] data;
+            String extension;
+
+            switch (format.toLowerCase()) {
+                case "pdf":
+                    data = plannerExportService.exportPdf(planner, grid, 50);
+                    extension = "pdf";
+                    break;
+                case "word":
+                case "docx":
+                    data = plannerExportService.exportWord(planner, grid, 50);
+                    extension = "docx";
+                    break;
+                case "excel":
+                case "xlsx":
+                    data = plannerExportService.exportExcel(planner, grid, 50);
+                    extension = "xlsx";
+                    break;
+                default:
+                    return ResponseHelper.badRequest("Unsupported format: " + format);
+            }
+            return ResponseHelper.ok(data, "Planner exported as ." + extension);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        } catch (Exception e) {
+            return ResponseHelper.badRequest("Export failed: " + e.getMessage());
+        }
+    }
+
+
 
 
     private User getCurrentUser(Authentication auth) {
