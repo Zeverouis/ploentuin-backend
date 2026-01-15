@@ -34,4 +34,24 @@ public class EmailService {
             throw new RuntimeException("Failed to send password reset email to " + toEmail, e);
         }
     }
+
+    public void sendVerificationEmail(String toEmail, String verificationToken) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            String link = "https://ploentuin.nl/verify?token=" + verificationToken;
+            String html = "<p>Hey hey, welkom bij Ploentuin!</p>"
+                    + "<p>Klik op de link om je email te verifiëren zodat je mee kan doen op het forum:</p>"
+                    + "<a href=\"" + link + "\">Verifieer email</a>";
+
+            helper.setTo(toEmail);
+            helper.setSubject("Verifieer je email");
+            helper.setText(html, true);
+
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send verification email to " + toEmail, e);
+        }
+    }
 }

@@ -41,6 +41,8 @@ public class UserService {
         if (userRepository.existsByEmailIgnoreCase(dto.getEmail()))
             throw new IllegalArgumentException("Emailadress is al in gebruik");
 
+        String verificationToken = UUID.randomUUID().toString();
+
         User user = new User(
                 dto.getUsername(),
                 passwordEncoder.encode(dto.getPassword()),
@@ -49,9 +51,24 @@ public class UserService {
                 User.Role.USER
         );
 
+        user.setEmailVerificationToken(verificationToken);
         User savedUser = userRepository.save(user);
 
+        emailService.sendVerificationEmail(
+                savedUser.getEmail(),
+                verificationToken
+        );
+
         return toMinimalDto(savedUser);
+    }
+
+    public void verifyEmail(VerificationTokenDto token) {
+        User user = userRepository.findByEmailVerificationToken(token.getToken())
+                .orElseThrow(() -> new IllegalArgumentException("Ongeldige of verlopen verificatietoken"));
+
+        user.setEmailVerified(true);
+        user.setEmailVerificationToken(null);
+        userRepository.save(user);
     }
 
     public String generateJwtForUser(User user) {

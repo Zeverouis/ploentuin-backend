@@ -36,6 +36,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestBody VerificationTokenDto token) {
+        try {
+            userService.verifyEmail(token);
+            return ResponseHelper.ok(null, "Email succesvol geverifieerd!");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.badRequest(e.getMessage());
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(@RequestBody @Valid UserLoginDto loginDto) {
         try {
