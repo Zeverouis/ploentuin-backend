@@ -65,7 +65,7 @@ public class MySecurityConfig {
                         .requestMatchers("/admins/**").hasRole("ADMIN")
 
                         .requestMatchers("/users/reset-password").authenticated()
-                        .requestMatchers("/users/email/change").authenticated()
+                        .requestMatchers("/users/email").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/*").authenticated()
                         .requestMatchers(HttpMethod.POST, "/forums/*").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/forums/*").authenticated()

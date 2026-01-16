@@ -84,22 +84,22 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("@securityHelper.isCurrentUser(#id)")
-    @PatchMapping("/{id}/email")
-    public ResponseEntity<?> changeEmail(@PathVariable int id, @RequestBody UpdateEmailDto dto) {
+    @PreAuthorize("@securityHelper.isCurrentUser()")
+    @PatchMapping("/email")
+    public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDto dto) {
         try {
-            UserInfoMinimalDto updated = userService.updateEmail(id, dto);
-            return ResponseHelper.ok(updated, "Email veranderd");
+            UserInfoMinimalDto updated = userService.updateEmail(dto);
+            return ResponseHelper.ok(updated, "Emailadres veranderd");
         } catch (IllegalArgumentException e) {
             return ResponseHelper.badRequest(e.getMessage());
         }
     }
 
-    @PreAuthorize("@securityHelper.isCurrentUser(#id)")
-    @PatchMapping("/{id}/password")
-    public ResponseEntity<?> changePassword(@PathVariable int id, @RequestBody @Valid ChangePasswordDto dto) {
+    @PreAuthorize("@securityHelper.isCurrentUser()")
+    @PatchMapping("/password")
+    public ResponseEntity<?> changePassword(@RequestParam String username, @RequestBody @Valid ChangePasswordDto dto) {
         try {
-            UserInfoMinimalDto updated = userService.changePassword(id, dto);
+            UserInfoMinimalDto updated = userService.changePassword(username, dto);
             return ResponseHelper.ok(updated, "Wachtwoord aangepast");
         } catch (IllegalArgumentException e) {
             return ResponseHelper.badRequest(e.getMessage());
@@ -128,10 +128,10 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @securityHelper.isCurrentUser(#id)")
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> getUser(@PathVariable int id) {
-        return userService.getUserById(id)
+    @PreAuthorize("hasRole('ADMIN') or @securityHelper.isCurrentUsername(#username)")
+    @GetMapping("/user/{username}")
+    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> getUser(@PathVariable String username) {
+        return userService.findByUsername(username)
                 .map(user -> ResponseHelper.ok(user, "User gevonden"))
                 .orElseGet(() -> ResponseHelper.notFound("User niet gevonden"));
     }

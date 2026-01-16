@@ -5,6 +5,7 @@ import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import nl.ploentuin.ploentuin.security.JwtUtil;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -105,31 +106,34 @@ public class UserService {
         return toMinimalDto(userRepository.save(user));
     }
 
-    public UserInfoMinimalDto updateEmail(int userId, UpdateEmailDto dto) {
-        User user = userRepository.findById(userId)
+    public UserInfoMinimalDto updateEmail(UpdateEmailDto dto) {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByUsernameIgnoreCase(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("Geen gebruiker gevonden"));
 
         String newEmail = dto.getEmail().trim();
 
         if (userRepository.existsByEmailIgnoreCase(newEmail) &&
                 !user.getEmail().equalsIgnoreCase(newEmail)) {
-            throw new IllegalArgumentException("Emailadress is al in gebruik");
+            throw new IllegalArgumentException("Emailadres is al in gebruik");
         }
+
         user.setEmail(newEmail);
         user.setEmailVerified(false);
 
         return toMinimalDto(userRepository.save(user));
     }
 
-    public UserInfoMinimalDto changePassword(int userId, ChangePasswordDto dto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Geen gebruiker gevonden"));
+    public UserInfoMinimalDto changePassword(String username, ChangePasswordDto dto) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
+
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Oud wachtwoord is onjuist");
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-
         return toMinimalDto(userRepository.save(user));
     }
 
@@ -138,10 +142,6 @@ public class UserService {
                 .stream()
                 .map(this::toMinimalDto)
                 .collect(Collectors.toList());
-    }
-
-    public Optional<UserInfoMinimalDto> getUserById(int userId) {
-        return userRepository.findById(userId).map(this::toMinimalDto);
     }
 
     public void deleteUser(int userId) {
