@@ -35,6 +35,10 @@ public class UserService {
                 u.isEmailVerified(), u.getEmail(), u.getRole());
     }
 
+    private UserInfoPublicDto toPublicDto(User u) {
+        return new UserInfoPublicDto(u.getUsername(), u.getPlanners(), u.getRole());
+    }
+
     public UserInfoMinimalDto register(UserRegisterDto dto) {
         if (userRepository.existsByUsernameIgnoreCase(dto.getUsername()))
             throw new IllegalArgumentException("Gebruikersnaam is al in gebruik");
@@ -98,8 +102,13 @@ public class UserService {
         return userRepository.findByUsernameIgnoreCase(username);
     }
 
-    public UserInfoMinimalDto updateRole(int userId, UpdateUserRoleDto dto) {
-        User user = userRepository.findById(userId)
+    public Optional<UserInfoPublicDto> findPublicUserByUsername(String username) {
+        return userRepository.findByUsernameIgnoreCase(username)
+                .map(this::toPublicDto);
+    }
+
+    public UserInfoMinimalDto updateRole(String username, UpdateUserRoleDto dto) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new IllegalArgumentException("Geen gebruiker gevonden"));
         user.setRole(dto.getRole());
 
@@ -144,11 +153,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUser(int userId) {
-        if (!userRepository.existsById(userId)) {
+    public void deleteUser(String username) {
+        if (!userRepository.existsByUsernameIgnoreCase(username)) {
             throw new IllegalArgumentException("User niet gevonden");
         }
-        userRepository.deleteById(userId);
+        userRepository.deleteByUsernameIgnoreCase(username);
     }
 
     public void sendPasswordReset(String email) {

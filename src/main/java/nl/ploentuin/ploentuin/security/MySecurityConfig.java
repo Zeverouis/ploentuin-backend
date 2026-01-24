@@ -62,10 +62,13 @@ public class MySecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
 
-                        .requestMatchers("/admins/**").hasRole("ADMIN")
-
                         .requestMatchers("/users/reset-password").authenticated()
+                        .requestMatchers("/users/*/change-password").authenticated()
                         .requestMatchers("/users/email").authenticated()
+                        .requestMatchers("/users/*/role").hasRole("ADMIN")
+                        .requestMatchers("/users/*/delete").hasRole("ADMIN")
+                        .requestMatchers("/users/user/*").authenticated()
+                        .requestMatchers("/users/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/*").authenticated()
                         .requestMatchers(HttpMethod.POST, "/forums/*").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/forums/*").authenticated()

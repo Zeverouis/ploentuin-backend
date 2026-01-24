@@ -95,9 +95,9 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("@securityHelper.isCurrentUser()")
-    @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(@RequestParam String username, @RequestBody @Valid ChangePasswordDto dto) {
+    @PreAuthorize("@securityHelper.isCurrentUsername(#username)")
+    @PatchMapping("/{username}/change-password")
+    public ResponseEntity<?> changePassword(@PathVariable String username, @RequestBody @Valid ChangePasswordDto dto) {
         try {
             UserInfoMinimalDto updated = userService.changePassword(username, dto);
             return ResponseHelper.ok(updated, "Wachtwoord aangepast");
@@ -107,10 +107,10 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}/role")
-    public ResponseEntity<?> updateUserRole(@PathVariable int id, @RequestBody UpdateUserRoleDto dto) {
+    @PatchMapping("/{username}/role")
+    public ResponseEntity<?> updateUserRole(@PathVariable String username, @RequestBody UpdateUserRoleDto dto) {
         try {
-            UserInfoMinimalDto updated = userService.updateRole(id, dto);
+            UserInfoMinimalDto updated = userService.updateRole(username, dto);
             return ResponseHelper.ok(updated, "User rol aangepast");
         } catch (IllegalArgumentException e) {
             return ResponseHelper.badRequest(e.getMessage());
@@ -118,10 +118,10 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int id) {
+    @DeleteMapping("/{username}/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String username) {
         try {
-            userService.deleteUser(id);
+            userService.deleteUser(username);
             return ResponseHelper.ok(null, "User verwijderd");
         } catch (IllegalArgumentException e) {
             return ResponseHelper.notFound(e.getMessage());
@@ -137,8 +137,8 @@ public class UserController {
     }
 
     @GetMapping("/public/{username}")
-    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> getPublicUser(@PathVariable String username) {
-        return userService.findByUsername(username)
+    public ResponseEntity<ApiResponse<UserInfoPublicDto>> getPublicUser(@PathVariable String username) {
+        return userService.findPublicUserByUsername(username)
                 .map(user -> ResponseHelper.ok(user, "User gevonden"))
                 .orElseGet(() -> ResponseHelper.notFound("User niet gevonden"));
     }
