@@ -62,6 +62,14 @@ public class MySecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/info/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/info/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/info/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/info/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/info/pages/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/info/pages/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/info/pages/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/info/pages/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/planner/catalog").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/planner/catalog").hasRole("ADMIN")
