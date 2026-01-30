@@ -55,12 +55,23 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/info/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/forums/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/public/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/planners/*").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/planners/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/planner/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/planner/*").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users/verify-email").permitAll()
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
+
+
+                        .requestMatchers(HttpMethod.POST, "/planner/catalog").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/planner/catalog").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/planner/catalog/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/planner").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/planner/*/place").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/planner/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/planner/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/planner/*/export/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/planner/**").permitAll()
 
                         .requestMatchers("/users/reset-password").authenticated()
                         .requestMatchers("/users/*/change-password").authenticated()
@@ -73,9 +84,9 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/forums/*").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/forums/*").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/forums/*").authenticated()
-                        .requestMatchers("/planners/*/claim").authenticated()
-                        .requestMatchers("/planners/save").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/planners/*").authenticated()
+                        .requestMatchers("/planner/*/claim").authenticated()
+                        .requestMatchers("/planner/save").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/planner/*").authenticated()
 
 
                         .anyRequest().authenticated()

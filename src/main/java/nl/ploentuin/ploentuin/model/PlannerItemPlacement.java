@@ -23,6 +23,9 @@ public class PlannerItemPlacement {
     @JoinColumn(name = "catalog_item_id", nullable = false)
     private PlannerItemCatalog catalogItem;
 
+    @Column(name = "row_num")
     private int row;
+
+    @Column(name = "col_num")
     private int column;
 }

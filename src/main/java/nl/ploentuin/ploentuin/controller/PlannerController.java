@@ -12,8 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/planner")
 public class PlannerController {
@@ -26,7 +24,8 @@ public class PlannerController {
     private final PlannerExportService plannerExportService;
 
     public PlannerController(PlannerService plannerService, PlannerItemCatalogService itemCatalogService,
-                             UserRepository userRepository, PlannerPngExportService plannerPngExportService, PlannerGridBuilderHelper gridBuilder, PlannerExportService plannerExportService) {
+                             UserRepository userRepository, PlannerPngExportService plannerPngExportService,
+                             PlannerGridBuilderHelper gridBuilder, PlannerExportService plannerExportService) {
         this.plannerService = plannerService;
         this.plannerItemCatalogService = itemCatalogService;
         this.userRepository = userRepository;
@@ -36,36 +35,40 @@ public class PlannerController {
     }
 
     @PostMapping
-    public PlannerInfoDto createPlanner(@RequestBody CreatePlannerDto dto,
-                                        Authentication auth,
-                                        @RequestParam(required = false) String anonymousToken) {
+    public ResponseEntity<?> createPlanner(@RequestBody CreatePlannerDto dto, Authentication auth) {
         User user = getCurrentUser(auth);
-        return plannerService.createPlanner(dto, user, anonymousToken);
+        PlannerInfoDto planner = plannerService.createPlanner(dto, user);
+        return ResponseHelper.ok(planner, "Planner succesvol aangemaakt");
     }
 
     @GetMapping("/{plannerId}")
-    public PlannerInfoDto getPlanner(@PathVariable int plannerId) {
-        return plannerService.getPlanner(plannerId);
-    }
-
-    @GetMapping("/planner-anonymous/{token}")
-    public PlannerInfoDto getPlannerAnonymous(@PathVariable String token) {
-        return plannerService.getPlannerByAnonymousToken(token);
+    public ResponseEntity<?> getPlanner(@PathVariable int plannerId) {
+        try {
+            PlannerInfoDto planner = plannerService.getPlanner(plannerId);
+            return ResponseHelper.ok(planner, "Planner gevonden");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
     }
 
     @PatchMapping("/{plannerId}")
-    public PlannerInfoDto updatePlanner(@PathVariable int plannerId,
-                                        @RequestBody UpdatePlannerDto dto,
-                                        Authentication auth,
-                                        @RequestParam(required = false) String anonymousToken) {
+    public ResponseEntity<?> updatePlanner(@PathVariable int plannerId,
+                                           @RequestBody UpdatePlannerDto dto,
+                                           Authentication auth) {
         User user = getCurrentUser(auth);
-        return plannerService.updatePlanner(plannerId, dto, user, anonymousToken);
+        try {
+            PlannerInfoDto updated = plannerService.updatePlanner(plannerId, dto, user);
+            return ResponseHelper.ok(updated, "Planner succesvol geüpdatet");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.forbidden(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{plannerId}")
-    public ResponseEntity<?> deletePlanner(@PathVariable int plannerId) {
+    public ResponseEntity<?> deletePlanner(@PathVariable int plannerId, Authentication auth) {
+        User user = getCurrentUser(auth);
         try {
-            plannerService.deletePlanner(plannerId);
+            plannerService.deletePlanner(plannerId, user);
             return ResponseHelper.ok(null, "Planner succesvol verwijderd");
         } catch (IllegalArgumentException e) {
             return ResponseHelper.notFound(e.getMessage());
@@ -73,72 +76,82 @@ public class PlannerController {
     }
 
     @PostMapping("/{plannerId}/place")
-    public PlannerItemPlacementDto placeItem(@PathVariable int plannerId,
-                                             @RequestParam int catalogItemId,
-                                             @RequestParam int row,
-                                             @RequestParam int column) {
-        return plannerService.placeItem(plannerId, catalogItemId, row, column);
+    public ResponseEntity<?> placeItem(@PathVariable int plannerId,
+                                       @RequestParam int catalogItemId,
+                                       @RequestParam int row,
+                                       @RequestParam int column) {
+        try {
+            PlannerItemPlacementDto placement = plannerService.placeItem(plannerId, catalogItemId, row, column);
+            return ResponseHelper.ok(placement, "Item geplaatst in planner");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{plannerId}/items/{placementId}")
     public ResponseEntity<?> deletePlacement(@PathVariable int plannerId,
-                                @PathVariable int placementId,
-                                Authentication auth) {
+                                             @PathVariable int placementId,
+                                             Authentication auth) {
         User user = getCurrentUser(auth);
         PlannerInfoDto planner = plannerService.getPlanner(plannerId);
-        if (user != null && planner.getUserId() != user.getId()) {
-            return ResponseHelper.forbidden("Deze planner is niet van jouw!");
+        if (planner.getUserId() != -1 && (user == null || planner.getUserId() != user.getId())) {
+            return ResponseHelper.forbidden("Deze planner is niet van jou!");
         }
-        plannerService.removePlacement(placementId);
-        return ResponseHelper.ok(null, "Object verwijderd.");
+
+        try {
+            plannerService.removePlacement(placementId);
+            return ResponseHelper.ok(null, "Object verwijderd");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
     }
 
-    @GetMapping("/planner/catalog")
-    public List<PlannerItemCatalogDto> getPlannerCatalog() {
-        return plannerItemCatalogService.getAllItems();
+    @GetMapping("/catalog")
+    public ResponseEntity<?> getPlannerCatalog() {
+        return ResponseHelper.ok(plannerItemCatalogService.getAllItems(), "Catalog items opgehaald");
     }
 
-    @GetMapping("/planner/catalog/type")
-    public List<PlannerItemCatalogDto> getPlannerCatalogByType(
-            @RequestParam PlannerItemCatalog.PlannerItemType type)
-    {
-        return plannerItemCatalogService.getItemsByType(type);
+    @GetMapping("/catalog/type")
+    public ResponseEntity<?> getPlannerCatalogByType(@RequestParam PlannerItemCatalog.PlannerItemType type) {
+        return ResponseHelper.ok(plannerItemCatalogService.getItemsByType(type), "Catalog items gefilterd op type");
     }
 
-    @GetMapping("/planner/catalog/{id}")
-    public PlannerItemCatalogDto getPlannerCatalogById(
-            @PathVariable int id)
-    {
-        return plannerItemCatalogService.getById(id);
+    @GetMapping("/catalog/{id}")
+    public ResponseEntity<?> getPlannerCatalogById(@PathVariable int id) {
+        try {
+            PlannerItemCatalogDto item = plannerItemCatalogService.getById(id);
+            return ResponseHelper.ok(item, "Catalog item gevonden");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
     }
 
     @PostMapping("/catalog")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createCatalogItem(
-            @RequestBody PlannerItemCatalog item,
-            Authentication auth) {
-
+    public ResponseEntity<?> createCatalogItem(@RequestBody PlannerItemCatalog item, Authentication auth) {
         User user = getCurrentUser(auth);
         if (user == null || user.getRole() != User.Role.ADMIN) {
-            return ResponseHelper.forbidden("Ge bent geen admin of wel?");
+            return ResponseHelper.forbidden("Je bent geen admin!");
         }
 
         plannerItemCatalogService.createItem(item);
         return ResponseHelper.created("Catalog item succesvol aangemaakt");
     }
 
-
     @DeleteMapping("/catalog")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCatalogItem(@RequestBody PlannerItemCatalogDto item, Authentication auth) {
         User user = getCurrentUser(auth);
         if (user == null || user.getRole() != User.Role.ADMIN) {
-            return ResponseHelper.forbidden("Ge bent geen admin of wel?");
+            return ResponseHelper.forbidden("Je bent geen admin!");
         }
 
+        PlannerItemCatalogDto deletedItem = plannerItemCatalogService.getById(item.getId());
         plannerItemCatalogService.deleteItem(item.getId());
-        return ResponseHelper.ok(null, "Catalog item succesvol verwijderd");
+
+        return ResponseHelper.ok(deletedItem, "Catalog item succesvol verwijderd");
     }
+
 
     @GetMapping("/{plannerId}/export/png")
     public ResponseEntity<byte[]> exportPlannerPng(@PathVariable int plannerId) {
@@ -186,9 +199,6 @@ public class PlannerController {
             return ResponseHelper.badRequest("Export failed: " + e.getMessage());
         }
     }
-
-
-
 
     private User getCurrentUser(Authentication auth) {
         if (auth == null) return null;

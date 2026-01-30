@@ -67,28 +67,20 @@ public class PlannerService {
         return info;
     }
 
-    public PlannerInfoDto createPlanner(CreatePlannerDto dto, User user, String anonymousToken) {
+    public PlannerInfoDto createPlanner(CreatePlannerDto dto, User user) {
         String title = dto.getTitle().trim();
-        String token = (user == null) ? (anonymousToken != null ? anonymousToken : UUID.randomUUID().toString()) : null;
 
         Planner planner = (user != null)
                 ? new Planner(user, title, dto.getRows(), dto.getColumns())
-                : new Planner(title, dto.getRows(), dto.getColumns(), token);
+                : new Planner(title, dto.getRows(), dto.getColumns());
 
         Planner savedPlanner = plannerRepository.save(planner);
         return toInfoDto(savedPlanner, Collections.emptyList());
     }
 
+
     public PlannerInfoDto getPlanner(int plannerId) {
         Planner planner = plannerRepository.findById(plannerId)
-                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
-
-        List<PlannerItemPlacement> placements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
-        return toInfoDto(planner, placements);
-    }
-
-    public PlannerInfoDto getPlannerByAnonymousToken(String token) {
-        Planner planner = plannerRepository.findByAnonymousToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
 
         List<PlannerItemPlacement> placements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
@@ -114,12 +106,15 @@ public class PlannerService {
         return getPlanners(user, "updated", false);
     }
 
-    public PlannerInfoDto updatePlanner(int plannerId, UpdatePlannerDto dto, User user, String anonymousToken) {
-        Planner planner = (user != null)
-                ? plannerRepository.findByIdAndUser(plannerId, user)
-                .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"))
-                : plannerRepository.findByAnonymousToken(anonymousToken)
+    public PlannerInfoDto updatePlanner(int plannerId, UpdatePlannerDto dto, User user) {
+        Planner planner = plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
+
+        if (planner.getUser() != null) {
+            if (user == null || planner.getUser().getId() != user.getId()) {
+                throw new IllegalArgumentException("Planner is niet van jou");
+            }
+        }
 
         if (dto.getTitle() != null) planner.setTitle(dto.getTitle());
         planner.setRows(dto.getRows());
@@ -143,18 +138,25 @@ public class PlannerService {
             }
         }
 
-        List<PlannerItemPlacement> updatedPlacements = placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
+        List<PlannerItemPlacement> updatedPlacements =
+                placementRepository.findAllByPlannerOrderByRowAscColumnAsc(planner);
 
         return toInfoDto(planner, updatedPlacements);
     }
 
-    public void deletePlanner(int plannerId) {
+
+    public void deletePlanner(int plannerId, User user) {
         Planner planner = plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));
+
+        if (planner.getUser() != null && (user == null || planner.getUser().getId() != user.getId())) {
+            throw new IllegalArgumentException("Planner is niet van jou");
+        }
 
         placementRepository.deleteAllByPlanner(planner);
         plannerRepository.delete(planner);
     }
+
 
     public PlannerItemPlacementDto placeItem(int plannerId, int catalogItemId, int row, int column) {
         Planner planner = plannerRepository.findById(plannerId)

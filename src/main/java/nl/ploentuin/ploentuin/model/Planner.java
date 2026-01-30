@@ -20,9 +20,6 @@ public class Planner extends Timestamp {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "anonymous_token", unique = true)
-    private String anonymousToken;
-
     @Column(nullable = false)
     private String title;
 
@@ -42,7 +39,7 @@ public class Planner extends Timestamp {
         this.columns = columns;
     }
 
-    public Planner(String title, int rows, int columns, String anonymousToken) {
+    public Planner(String title, int rows, int columns) {
         this.title = title;
         this.rows = rows;
         this.columns = columns;

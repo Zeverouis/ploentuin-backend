@@ -14,6 +14,4 @@ public interface PlannerRepository extends JpaRepository<Planner,Integer> {
 
     List<Planner> findAllByUser(User user, Sort sort);
     Optional<Planner> findByIdAndUser(int id, User user);
-
-    Optional<Planner> findByAnonymousToken(String token);
 }
