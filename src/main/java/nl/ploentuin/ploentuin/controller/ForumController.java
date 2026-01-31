@@ -41,6 +41,16 @@ public class ForumController {
         }
     }
 
+    @PostMapping("/categories")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ForumCategory>> createCategory(
+            @RequestBody @Valid ForumCategoryCreateDto dto
+    ) {
+        ForumCategory category = forumService.createCategory(dto.getCategoryName());
+        return ResponseHelper.ok(category, "Categorie aangemaakt");
+    }
+
+
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse<ForumPostResponseDto>> getPost(@PathVariable int postId) {
         try {

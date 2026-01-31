@@ -82,6 +82,16 @@ public class ForumService {
                 .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
     }
 
+    public ForumCategory createCategory(String categoryName) {
+        if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
+            throw new IllegalArgumentException("Categorie bestaat al");
+        }
+        ForumCategory category = new ForumCategory();
+        category.setCategoryName(categoryName);
+        return categoryRepository.save(category);
+    }
+
+
     public ForumCategory getCategoryByName(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
