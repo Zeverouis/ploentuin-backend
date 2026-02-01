@@ -50,6 +50,16 @@ public class ForumController {
         return ResponseHelper.ok(category, "Categorie aangemaakt");
     }
 
+    @GetMapping("/categories/name/{categoryName}")
+    public ResponseEntity<ApiResponse<ForumCategory>> getCategoryByName(@PathVariable String categoryName) {
+        try {
+            ForumCategory category = forumService.getCategoryByName(categoryName);
+            return ResponseHelper.ok(category, "Categorie opgehaald");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.notFound(e.getMessage());
+        }
+    }
+
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse<ForumPostResponseDto>> getPost(@PathVariable int postId) {
@@ -60,10 +70,13 @@ public class ForumController {
         }
     }
 
-    @GetMapping("/users/{userId}/posts")
-    public ResponseEntity<ApiResponse<List<ForumPostResponseDto>>> getPostsByUser(@PathVariable int userId) {
-        return ResponseHelper.ok(forumService.getPostsByUser(userId), "Posts van gebruiker opgehaald");
+    @GetMapping("/users/{username}/posts")
+    public ResponseEntity<ApiResponse<List<ForumPostResponseDto>>> getPostsByUsername(@PathVariable String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
+        return ResponseHelper.ok(forumService.getPostsByUser(user.getId()), "Posts van gebruiker opgehaald");
     }
+
 
     @GetMapping("/categories/{categoryId}/posts")
     public ResponseEntity<ApiResponse<List<ForumPostResponseDto>>> getPostsByCategory(@PathVariable int categoryId) {
@@ -152,9 +165,11 @@ public class ForumController {
         }
     }
 
-    @GetMapping("/users/{userId}/comments")
-    public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getCommentsByUser(@PathVariable int userId) {
-        return ResponseHelper.ok(forumService.getCommentsByUser(userId), "Comments van gebruiker opgehaald");
+    @GetMapping("/users/{username}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getCommentsByUsername(@PathVariable String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
+        return ResponseHelper.ok(forumService.getCommentsByUser(user.getId()), "Comments van gebruiker opgehaald");
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MOD')")
@@ -162,9 +177,10 @@ public class ForumController {
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable int commentId,
             Authentication auth
-    ) {
+    )
+    {
         User user = getCurrentUser(auth);
-        if (user == null) return ResponseHelper.forbidden("Je moet ingelogd zijn om een comment te verwijderen");
+        if (user == null) return ResponseHelper.forbidden("Ge bent geen admin of mod ofwel? Of niet ingelogd!");
 
         try {
             forumService.deleteComment(commentId, user);
@@ -175,11 +191,22 @@ public class ForumController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MOD')")
-    @DeleteMapping("/users/{userId}/comments")
-    public ResponseEntity<ApiResponse<Void>> deleteAllCommentsByUser(@PathVariable int userId) {
-        forumService.deleteAllCommentsByUser(userId);
+    @DeleteMapping("/users/{username}/comments")
+    public ResponseEntity<ApiResponse<Void>> deleteAllCommentsByUsername(
+            @PathVariable String username,
+            Authentication auth
+    )
+    {
+        User adminUser = getCurrentUser(auth);
+        if (adminUser == null) return ResponseHelper.forbidden("Bende gij wel een admin/mod? Zo ja, log dan ffe in.");
+
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
+
+        forumService.deleteAllCommentsByUser(user.getId());
         return ResponseHelper.ok(null, "Alle comments van gebruiker verwijderd");
     }
+
 
     private User getCurrentUser(Authentication auth) {
         if (auth == null) return null;

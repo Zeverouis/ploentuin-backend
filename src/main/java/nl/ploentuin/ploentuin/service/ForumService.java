@@ -12,6 +12,8 @@ import nl.ploentuin.ploentuin.repository.CommentRepository;
 import nl.ploentuin.ploentuin.repository.ForumCategoryRepository;
 import nl.ploentuin.ploentuin.repository.ForumPostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -240,6 +242,7 @@ public class ForumService {
         commentRepository.delete(comment);
     }
 
+    @Transactional
     public void deleteAllCommentsByUser(int userId) {
         List<Comment> comments = commentRepository.findAllByUserId(userId);
         for (Comment comment : comments) {
