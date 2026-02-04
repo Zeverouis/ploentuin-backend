@@ -70,6 +70,7 @@ public class MySecurityConfig {
                         .requestMatchers("/users/verify-email").permitAll()
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/public/**").permitAll()
                         .requestMatchers("/users/reset-password").authenticated()
                         .requestMatchers("/users/*/change-password").authenticated()
                         .requestMatchers("/users/email").authenticated()
