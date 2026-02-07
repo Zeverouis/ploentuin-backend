@@ -34,6 +34,7 @@ public class PlannerItemCatalog {
         FRUITS,
         VEGETABLES,
         AQUATICS,
-        SUCCULENTS
+        SUCCULENTS,
+        GROUNDS
     }
 }

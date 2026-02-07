@@ -23,13 +23,11 @@ public class Planner extends Timestamp {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(name = "row_count", nullable = false)
     private int rows;
 
-    @Column(nullable = false)
+    @Column(name = "column_count", nullable = false)
     private int columns;
-
-    //TODO: possibly rename for DB rows and columns
 
 
     public Planner(User user, String title, int rows, int columns) {
