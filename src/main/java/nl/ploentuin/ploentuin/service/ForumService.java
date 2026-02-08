@@ -181,12 +181,41 @@ public class ForumService {
         return toPostDto(saved);
     }
 
+    public CommentResponseDto updateComment(int commentId, CommentCreateDto dto, User user) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment niet gevonden"));
+
+        if (comment.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("Gij zijt niet de eigenaar van deze comment!");
+        }
+
+        if (dto.getContent() != null) {
+            comment.setContent(dto.getContent());
+        }
+
+        Comment saved = commentRepository.save(comment);
+
+        if ((dto.getImages() != null && dto.getImages().length > 0) ||
+                (dto.getImageUrls() != null && dto.getImageUrls().length > 0)) {
+
+            ImageCreateDto imgDto = new ImageCreateDto();
+            imgDto.setImages(dto.getImages());
+            imgDto.setImageUrls(dto.getImageUrls());
+            imageService.createImages(saved.getId(), Image.ParentType.COMMENT, user.getId(), imgDto);
+        }
+
+        return toCommentDto(saved);
+    }
+
     public void deletePost(int postId, User user) {
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));
 
-        if (post.getUser().getId() != user.getId()) {
-            throw new IllegalArgumentException("Je hebt geen permissie om deze post te verwijderen");
+        boolean isOwner = post.getUser().getId() == user.getId();
+        boolean isAdmin = user.getRole().name().equals("ADMIN") || user.getRole().name().equals("MOD");
+
+        if (!isOwner && !isAdmin) {
+            throw new IllegalArgumentException("Gij hebt hier niks te vertellen! (Geen permissie)");
         }
 
         List<Comment> comments = commentRepository.findAllByForumPostId(postId);
@@ -234,8 +263,11 @@ public class ForumService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment niet gevonden"));
 
-        if (comment.getUser().getId() != user.getId()) {
-            throw new IllegalArgumentException("Je hebt geen permissie om deze comment te verwijderen");
+        boolean isOwner = comment.getUser().getId() == user.getId();
+        boolean isAdmin = user.getRole().name().equals("ADMIN") || user.getRole().name().equals("MOD");
+
+        if (!isOwner && !isAdmin) {
+            throw new IllegalArgumentException("Ge hebt geen permissie om deze comment te verwijderen");
         }
 
         imageService.deleteImagesByParent(comment.getId(), Image.ParentType.COMMENT);

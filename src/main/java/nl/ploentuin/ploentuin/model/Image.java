@@ -28,14 +28,14 @@ public class Image extends Timestamp {
     @Column(nullable = false)
     private ParentType parentType;
 
-    @Column(nullable = false)
+    @Column
     private String imageUrl;
 
     @Column(length = 500)
     private String caption;
 
     @Lob
-    @Column(nullable = false)
+    @Column
     private byte[] data;
 
     public enum ParentType{

@@ -132,7 +132,6 @@ public class ForumController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MOD')")
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable int postId,
@@ -165,6 +164,22 @@ public class ForumController {
         }
     }
 
+    @PatchMapping(value = "/comments/{commentId}", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
+            @PathVariable int commentId,
+            @ModelAttribute CommentCreateDto dto,
+            Authentication auth
+    ) {
+        User user = getCurrentUser(auth);
+        if (user == null) return ResponseHelper.forbidden("Inloggen ffe aub.");
+
+        try {
+            return ResponseHelper.ok(forumService.updateComment(commentId, dto, user), "Comment bijgewerkt");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.forbidden(e.getMessage());
+        }
+    }
+
     @GetMapping("/users/{username}/comments")
     public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getCommentsByUsername(@PathVariable String username) {
         User user = userRepository.findByUsernameIgnoreCase(username)
@@ -172,7 +187,6 @@ public class ForumController {
         return ResponseHelper.ok(forumService.getCommentsByUser(user.getId()), "Comments van gebruiker opgehaald");
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MOD')")
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable int commentId,

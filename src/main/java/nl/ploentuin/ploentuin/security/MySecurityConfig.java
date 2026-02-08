@@ -62,7 +62,7 @@ public class MySecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/forums/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/forums/categories/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/forums/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/forums/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/forums/posts/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/forums/**").authenticated()
 
