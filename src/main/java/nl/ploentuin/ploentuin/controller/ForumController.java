@@ -60,6 +60,11 @@ public class ForumController {
         }
     }
 
+    @GetMapping("/posts/latest")
+    public ResponseEntity<ApiResponse<List<ForumPostResponseDto>>> getLatestPosts() {
+        return ResponseHelper.ok(forumService.getLatestPosts(), "Nieuwste posts opgehaald");
+    }
+
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse<ForumPostResponseDto>> getPost(@PathVariable int postId) {
@@ -99,6 +104,7 @@ public class ForumController {
     ) {
         return ResponseHelper.ok(forumService.searchPostsByTitle(query), "Zoekresultaten opgehaald");
     }
+
 
     @PostMapping(value = "/categories/{categoryId}/posts", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<ForumPostResponseDto>> createPost(

@@ -156,6 +156,14 @@ public class ForumService {
                 .collect(Collectors.toList());
     }
 
+    public List<ForumPostResponseDto> getLatestPosts() {
+        return postRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .limit(5)
+                .map(this::toPostDto)
+                .collect(Collectors.toList());
+    }
+
     public ForumPostResponseDto updatePost(int postId, ForumPostCreateDto dto, User user) {
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));

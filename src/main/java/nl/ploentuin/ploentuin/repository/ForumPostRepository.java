@@ -11,6 +11,7 @@ public interface ForumPostRepository extends JpaRepository<ForumPost, Integer> {
 
     List<ForumPost> findAllByForumCategoryId(int forumCategoryId);
     List<ForumPost> findAllByUserId(int userId);
+    List<ForumPost> findAllByOrderByCreatedAtDesc();
 
     List<ForumPost> findAllByForumCategoryIdOrderByUpdatedAtDesc(int forumCategoryId);
 
