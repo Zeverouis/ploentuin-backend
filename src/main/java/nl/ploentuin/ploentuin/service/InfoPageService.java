@@ -99,7 +99,7 @@ public class InfoPageService {
     public List<InfoPageInfoDto> getLatestPages() {
         return pageRepository.findAllByOrderByUpdatedAtDesc()
                 .stream()
-                .limit(5) // Pak de 5 meest recent bijgewerkte pagina's
+                .limit(5)
                 .map(this::toPageInfoDto)
                 .collect(Collectors.toList());
     }
