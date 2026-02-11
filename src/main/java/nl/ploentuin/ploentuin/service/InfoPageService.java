@@ -96,6 +96,14 @@ public class InfoPageService {
         categoryRepository.delete(category);
     }
 
+    public List<InfoPageInfoDto> getLatestPages() {
+        return pageRepository.findAllByOrderByUpdatedAtDesc()
+                .stream()
+                .limit(5) // Pak de 5 meest recent bijgewerkte pagina's
+                .map(this::toPageInfoDto)
+                .collect(Collectors.toList());
+    }
+
     public List<InfoPageInfoDto> getAllPages() {
         return pageRepository.findAllByOrderByUpdatedAtDesc()
                 .stream()

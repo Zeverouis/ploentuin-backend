@@ -21,6 +21,11 @@ public class InfoPageController {
         this.infoPageService = infoPageService;
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<ApiResponse<List<InfoPageInfoDto>>> getLatestPages() {
+        return ResponseHelper.ok(infoPageService.getLatestPages(), "Nieuwste pagina's opgehaald");
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<InfoPageInfoDto>>> getAllPages() {
         List<InfoPageInfoDto> pages = infoPageService.getAllPages();
