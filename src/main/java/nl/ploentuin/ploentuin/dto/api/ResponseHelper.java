@@ -23,4 +23,8 @@ public class ResponseHelper {
     public static <T> ResponseEntity<ApiResponse<T>> created(String message) {
         return ResponseEntity.status(201).body(new ApiResponse<>(null, message));
     }
+
+    public static <T> ResponseEntity<ApiResponse<T>> unauthorized(String message) {
+        return ResponseEntity.status(401).body(new ApiResponse<>(null, message));
+    }
 }

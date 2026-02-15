@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -147,5 +149,16 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<List<UserInfoMinimalDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllVerifiedUsers());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseHelper.unauthorized("Niet ingelogd");
+        }
+
+        return userService.findByUsername(userDetails.getUsername())
+                .map(user -> ResponseHelper.ok(user, "Sessie is nog geldig"))
+                .orElseGet(() -> ResponseHelper.unauthorized("User niet gevonden"));
     }
 }

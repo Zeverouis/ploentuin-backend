@@ -1,11 +1,11 @@
 INSERT INTO ploentuin_user (username, email, password, email_verified, role, email_verification_token, reset_token)
 VALUES
-    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'ADMIN', NULL, NULL),
-    ('alice', 'alice@example.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'USER', NULL, NULL),
-    ('bob', 'bob@example.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'USER', NULL, NULL),
-    ('charlie', 'charlie@example.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'USER', NULL, NULL),
-    ('diana', 'diana@example.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'USER', NULL, NULL),
-    ('edward', 'edward@example.com', '$2a$10$7QIX9Lx9GjNx5F5/Z6RkiuF6l5O2ruqM/9txfN02X8xC6.TvPDp2K', true, 'USER', NULL, NULL);
+    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL),
+    ('alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
+    ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
+    ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
+    ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
+    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL);
 
 
 INSERT INTO planner_item_catalog (name, colour, image_url, type)
