@@ -31,6 +31,8 @@ public class ImageService {
                 img.getParentType(),
                 img.getUserId(),
                 img.getCaption(),
+                img.getImageUrl(),
+                img.getData(),
                 img.getCreatedAt(),
                 img.getUpdatedAt()
         );

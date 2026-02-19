@@ -5,7 +5,7 @@ VALUES
     ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
     ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
     ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL),
-    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL);
+    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.R', true, 'USER', NULL, NULL);
 
 
 INSERT INTO planner_item_catalog (name, colour, image_url, type)
