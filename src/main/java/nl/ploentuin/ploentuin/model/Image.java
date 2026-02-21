@@ -35,7 +35,8 @@ public class Image extends Timestamp {
     private String caption;
 
     @Lob
-    @Column
+    @org.hibernate.annotations.JdbcType(org.hibernate.type.descriptor.jdbc.VarbinaryJdbcType.class)
+    @Column(name = "data")
     private byte[] data;
 
     public enum ParentType{

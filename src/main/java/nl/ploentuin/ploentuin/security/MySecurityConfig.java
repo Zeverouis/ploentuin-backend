@@ -2,7 +2,6 @@ package nl.ploentuin.ploentuin.security;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +62,8 @@ public class MySecurityConfig {
 
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/info/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/info/categories/**").hasRole("ADMIN")

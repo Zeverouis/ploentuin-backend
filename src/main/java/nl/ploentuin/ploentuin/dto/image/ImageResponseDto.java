@@ -20,7 +20,6 @@ public class ImageResponseDto {
     private int userId;
     private String caption;
     private String imageUrl;
-    private byte[] data;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

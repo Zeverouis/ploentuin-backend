@@ -6,6 +6,7 @@ import nl.ploentuin.ploentuin.dto.image.ImageUpdateDto;
 import nl.ploentuin.ploentuin.model.Image;
 import nl.ploentuin.ploentuin.repository.ImageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,19 +26,29 @@ public class ImageService {
     }
 
     private ImageResponseDto toDto(Image img) {
+        String finalUrl = (img.getImageUrl() != null && img.getImageUrl().startsWith("http"))
+                ? img.getImageUrl()
+                : "/images/" + img.getId();
+
         return new ImageResponseDto(
                 img.getId(),
                 img.getParentId(),
                 img.getParentType(),
                 img.getUserId(),
                 img.getCaption(),
-                img.getImageUrl(),
-                img.getData(),
+                finalUrl,
                 img.getCreatedAt(),
                 img.getUpdatedAt()
         );
     }
 
+    @Transactional
+    public Image getImageEntity(int id) {
+        return imageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Afbeelding niet gevonden"));
+    }
+
+    @Transactional
     public List<ImageResponseDto> createImages(int parentId, Image.ParentType parentType, int userId,
                                                ImageCreateDto dto) {
         List<ImageResponseDto> savedImages = new ArrayList<>();
@@ -58,7 +69,7 @@ public class ImageService {
                     imageRepository.save(img);
                     savedImages.add(toDto(img));
                 } catch (IOException e) {
-                    System.err.println("Kon file niet uploaden" + file.getOriginalFilename());
+                    System.err.println("Kon file niet uploaden: " + file.getOriginalFilename());
                 }
             }
         }
@@ -80,7 +91,7 @@ public class ImageService {
                     imageRepository.save(img);
                     savedImages.add(toDto(img));
                 } catch (IOException e) {
-                    System.err.println("Kon image niet downloaden vanuit URL" + urlStr);
+                    System.err.println("Kon image niet downloaden vanuit URL: " + urlStr);
                 }
             }
         }
@@ -92,6 +103,7 @@ public class ImageService {
         return savedImages;
     }
 
+    @Transactional
     public void deleteImage(int imageId, int userId) {
         Image img = imageRepository.findById(imageId)
                 .orElseThrow(() -> new IllegalArgumentException("Afbeelding niet gevonden"));
@@ -103,6 +115,7 @@ public class ImageService {
         imageRepository.delete(img);
     }
 
+    @Transactional
     public List<ImageResponseDto> getImagesByParent(int parentId, Image.ParentType parentType) {
         return imageRepository.findAllByParentIdAndParentType(parentId, parentType)
                 .stream()
@@ -110,11 +123,13 @@ public class ImageService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteImagesByParent(int parentId, Image.ParentType parentType) {
         List<Image> images = imageRepository.findAllByParentIdAndParentType(parentId, parentType);
         imageRepository.deleteAll(images);
     }
 
+    @Transactional
     public ImageResponseDto updateCaption(int imageId, int userId, ImageUpdateDto dto) {
         Image img = imageRepository.findById(imageId)
                 .orElseThrow(() -> new IllegalArgumentException("Afbeelding niet gevonden"));
