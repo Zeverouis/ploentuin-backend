@@ -20,6 +20,7 @@ public class CommentResponseDto {
     private int forumPostId;
     private String username;
     private String content;
+    private boolean userBanned;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

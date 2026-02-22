@@ -53,6 +53,7 @@ public class ForumService {
                 post.getForumCategory().getCategoryName(),
                 post.getTitle(),
                 post.getContent(),
+                post.getUser().isBanned(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
                 comments,
@@ -69,6 +70,7 @@ public class ForumService {
                 comment.getForumPost().getId(),
                 comment.getUser().getUsername(),
                 comment.getContent(),
+                comment.getUser().isBanned(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt(),
                 images
@@ -100,6 +102,10 @@ public class ForumService {
 
     @Transactional
     public ForumPostResponseDto createPost(ForumPostCreateDto dto, User user, int categoryId) {
+        if (user.isBanned()) {
+            throw new IllegalArgumentException("Je kunt geen berichten plaatsen omdat je account is verbannen.");
+        }
+
         ForumCategory category = getCategoryById(categoryId);
 
         ForumPost post = new ForumPost();
@@ -242,6 +248,10 @@ public class ForumService {
 
     @Transactional
     public CommentResponseDto addComment(int postId, CommentCreateDto dto, User user) {
+        if (user.isBanned()) {
+            throw new IllegalArgumentException("Je kunt geen berichten plaatsen omdat je account is verbannen.");
+        }
+
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));
 

@@ -165,11 +165,20 @@ public class PlannerService {
         PlannerItemCatalog catalog = catalogRepository.findById(catalogItemId)
                 .orElseThrow(() -> new IllegalArgumentException("Catalog item niet gevonden"));
 
-        PlannerItemPlacement placement = new PlannerItemPlacement();
-        placement.setPlanner(planner);
-        placement.setCatalogItem(catalog);
-        placement.setRow(row);
-        placement.setColumn(column);
+        Optional<PlannerItemPlacement> existing = placementRepository
+                .findByPlannerAndRowAndColumn(planner, row, column);
+
+        PlannerItemPlacement placement;
+        if (existing.isPresent()) {
+            placement = existing.get();
+            placement.setCatalogItem(catalog);
+        } else {
+            placement = new PlannerItemPlacement();
+            placement.setPlanner(planner);
+            placement.setCatalogItem(catalog);
+            placement.setRow(row);
+            placement.setColumn(column);
+        }
 
         PlannerItemPlacement saved = placementRepository.save(placement);
         return toPlacementDto(saved);

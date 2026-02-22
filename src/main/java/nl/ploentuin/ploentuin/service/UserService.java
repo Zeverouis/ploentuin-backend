@@ -4,6 +4,7 @@ import nl.ploentuin.ploentuin.dto.user.*;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import nl.ploentuin.ploentuin.security.JwtUtil;
+import nl.ploentuin.ploentuin.security.SecurityHelper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,18 +22,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
+    private final SecurityHelper securityHelper;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       EmailService emailService, JwtUtil jwtUtil) {
+                       EmailService emailService, JwtUtil jwtUtil, SecurityHelper securityHelper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.jwtUtil = jwtUtil;
+        this.securityHelper = securityHelper;
     }
 
     private UserInfoMinimalDto toMinimalDto(User u) {
         return new UserInfoMinimalDto(u.getId(), u.getUsername(),
-                u.isEmailVerified(), u.getEmail(), u.getRole());
+                u.isEmailVerified(), u.getEmail(), u.getRole(), u.isBanned());
     }
 
     private UserInfoPublicDto toPublicDto(User u) {
@@ -53,7 +56,8 @@ public class UserService {
                 passwordEncoder.encode(dto.getPassword()),
                 dto.getEmail(),
                 false,
-                User.Role.USER
+                User.Role.USER,
+                false
         );
 
         user.setEmailVerificationToken(verificationToken);
@@ -153,11 +157,16 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUser(String username) {
-        if (!userRepository.existsByUsernameIgnoreCase(username)) {
-            throw new IllegalArgumentException("User niet gevonden");
+    public UserInfoMinimalDto toggleBan(String username) {
+        if (securityHelper.isCurrentUsername(username)) {
+            throw new IllegalArgumentException("Je kunt jezelf niet verbannen.");
         }
-        userRepository.deleteByUsernameIgnoreCase(username);
+
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new IllegalArgumentException("User niet gevonden"));
+
+        user.setBanned(!user.isBanned());
+        return toMinimalDto(userRepository.save(user));
     }
 
     public void sendPasswordReset(String email) {

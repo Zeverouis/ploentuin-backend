@@ -120,11 +120,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{username}/delete")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String username) {
+    @PatchMapping("/{username}/ban")
+    public ResponseEntity<ApiResponse<UserInfoMinimalDto>> banUser(@PathVariable String username) {
         try {
-            userService.deleteUser(username);
-            return ResponseHelper.ok(null, "User verwijderd");
+            UserInfoMinimalDto updated = userService.toggleBan(username);
+            String message = updated.isBanned() ? "User is verbannen" : "User is weer welkom";
+            return ResponseHelper.ok(updated, message);
         } catch (IllegalArgumentException e) {
             return ResponseHelper.notFound(e.getMessage());
         }

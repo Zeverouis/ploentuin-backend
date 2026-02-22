@@ -22,6 +22,7 @@ public class ForumPostResponseDto {
     private String forumCategoryName;
     private String title;
     private String content;
+    private boolean userBanned;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

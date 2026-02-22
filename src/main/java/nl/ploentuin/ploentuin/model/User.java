@@ -33,6 +33,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private boolean banned = false;
+
     @Column
     private String resetToken;
 
@@ -48,12 +51,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Planner> planners = new ArrayList<>();
 
-    public User(String username, String password, String email, boolean emailVerified, Role role) {
+    public User(String username, String password, String email, boolean emailVerified, Role role, boolean banned) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.emailVerified = emailVerified;
         this.role = role;
+        this.banned = banned;
     }
 
 }
