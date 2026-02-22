@@ -227,6 +227,13 @@ public class ForumController {
         return ResponseHelper.ok(null, "Alle comments van gebruiker verwijderd");
     }
 
+    @DeleteMapping("/categories/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable int id, Authentication auth) {
+        User admin = getCurrentUser(auth);
+        forumService.deleteCategory(id, admin);
+        return ResponseHelper.ok(null, "Categorie verwijderd");
+    }
 
     private User getCurrentUser(Authentication auth) {
         if (auth == null) return null;

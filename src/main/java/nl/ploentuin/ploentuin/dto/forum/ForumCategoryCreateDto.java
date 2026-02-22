@@ -9,5 +9,4 @@ import lombok.Setter;
 public class ForumCategoryCreateDto {
     @NotBlank
     private String categoryName;
-
 }

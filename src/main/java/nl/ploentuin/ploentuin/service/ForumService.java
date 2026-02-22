@@ -93,12 +93,12 @@ public class ForumService {
         return categoryRepository.save(category);
     }
 
-
     public ForumCategory getCategoryByName(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
     }
 
+    @Transactional
     public ForumPostResponseDto createPost(ForumPostCreateDto dto, User user, int categoryId) {
         ForumCategory category = getCategoryById(categoryId);
 
@@ -164,6 +164,7 @@ public class ForumService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public ForumPostResponseDto updatePost(int postId, ForumPostCreateDto dto, User user) {
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));
@@ -189,6 +190,7 @@ public class ForumService {
         return toPostDto(saved);
     }
 
+    @Transactional
     public CommentResponseDto updateComment(int commentId, CommentCreateDto dto, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment niet gevonden"));
@@ -215,6 +217,7 @@ public class ForumService {
         return toCommentDto(saved);
     }
 
+    @Transactional
     public void deletePost(int postId, User user) {
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));
@@ -237,6 +240,7 @@ public class ForumService {
         postRepository.delete(post);
     }
 
+    @Transactional
     public CommentResponseDto addComment(int postId, CommentCreateDto dto, User user) {
         ForumPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post niet gevonden"));
@@ -267,6 +271,7 @@ public class ForumService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteComment(int commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment niet gevonden"));
@@ -289,5 +294,16 @@ public class ForumService {
             imageService.deleteImagesByParent(comment.getId(), Image.ParentType.COMMENT);
         }
         commentRepository.deleteAllByUserId(userId);
+    }
+
+    @Transactional
+    public void deleteCategory(int id, User admin) {
+        ForumCategory category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categorie niet gevonden"));
+        List<ForumPost> posts = postRepository.findAllByForumCategoryId(id);
+        for (ForumPost post : posts) {
+            deletePost(post.getId(), admin);
+        }
+        categoryRepository.delete(category);
     }
 }
