@@ -1,11 +1,11 @@
-INSERT INTO ploentuin_user (username, email, password, email_verified, role, email_verification_token, reset_token, banned)
+INSERT INTO ploentuin_user (username, email, password, email_verified, role, email_verification_token, reset_token, banned, avatar_url)
 VALUES
-    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false),
-    ('alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.R', true, 'USER', NULL, NULL, false);
+    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false, NULL),
+    ('alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL),
+    ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL),
+    ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL),
+    ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL),
+    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.R', true, 'USER', NULL, NULL, false, NULL);
 
 
 INSERT INTO planner_item_catalog (name, colour, image_url, type)

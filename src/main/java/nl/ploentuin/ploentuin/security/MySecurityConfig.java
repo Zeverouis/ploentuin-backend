@@ -85,6 +85,7 @@ public class MySecurityConfig {
                         .requestMatchers("/users/forgot-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/public/**").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
+                        .requestMatchers("users/profile/**").permitAll()
                         .requestMatchers("/users/*/change-password").authenticated()
                         .requestMatchers("/users/me").authenticated()
                         .requestMatchers("/users/email").authenticated()

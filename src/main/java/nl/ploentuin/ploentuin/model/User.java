@@ -36,6 +36,8 @@ public class User {
     @Column(nullable = false)
     private boolean banned = false;
 
+    private String avatarUrl = "https://img.icons8.com/?size=100&id=14736&format=png&color=000000";
+
     @Column
     private String resetToken;
 
@@ -51,13 +53,24 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Planner> planners = new ArrayList<>();
 
-    public User(String username, String password, String email, boolean emailVerified, Role role, boolean banned) {
+    public String getAvatarUrl() {
+        if (this.avatarUrl == null || this.avatarUrl.isBlank()) {
+            return "https://img.icons8.com/?size=100&id=14736&format=png&color=000000";
+        }
+        return this.avatarUrl;
+    }
+
+    public User(String username, String password, String email, boolean emailVerified, Role role, boolean banned, String avatarUrl) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.emailVerified = emailVerified;
         this.role = role;
         this.banned = banned;
+
+        if (avatarUrl != null && !avatarUrl.isBlank()) {
+            this.avatarUrl = avatarUrl;
+        }
     }
 
 }

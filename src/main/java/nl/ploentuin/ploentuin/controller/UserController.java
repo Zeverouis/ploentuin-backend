@@ -162,4 +162,22 @@ public class UserController {
                 .map(user -> ResponseHelper.ok(user, "Sessie is nog geldig"))
                 .orElseGet(() -> ResponseHelper.unauthorized("User niet gevonden"));
     }
+
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<ApiResponse<UserInfoPublicDto>> getProfile(@PathVariable String username) {
+        return userService.findPublicUserByUsername(username)
+                .map(user -> ResponseHelper.ok(user, "Profiel van " + username + " geladen"))
+                .orElseGet(() -> ResponseHelper.notFound("Profiel niet gevonden"));
+    }
+
+    @PreAuthorize("@securityHelper.isCurrentUser()")
+    @PatchMapping("/avatar")
+    public ResponseEntity<?> updateAvatar(@RequestBody UpdateAvatarDto dto) {
+        try {
+            UserInfoMinimalDto updated = userService.updateAvatar(dto.getAvatarUrl());
+            return ResponseHelper.ok(updated, "Avatar bijgewerkt");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.badRequest(e.getMessage());
+        }
+    }
 }
