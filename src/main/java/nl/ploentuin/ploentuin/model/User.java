@@ -38,6 +38,8 @@ public class User {
 
     private String avatarUrl = "https://img.icons8.com/?size=100&id=14736&format=png&color=000000";
 
+    private String about;
+
     @Column
     private String resetToken;
 
@@ -60,7 +62,7 @@ public class User {
         return this.avatarUrl;
     }
 
-    public User(String username, String password, String email, boolean emailVerified, Role role, boolean banned, String avatarUrl) {
+    public User(String username, String password, String email, boolean emailVerified, Role role, boolean banned, String avatarUrl, String about) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -71,6 +73,7 @@ public class User {
         if (avatarUrl != null && !avatarUrl.isBlank()) {
             this.avatarUrl = avatarUrl;
         }
+        this.about = about;
     }
 
 }

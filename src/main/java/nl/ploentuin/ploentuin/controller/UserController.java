@@ -108,6 +108,17 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("@securityHelper.isCurrentUser()")
+    @PatchMapping("/about")
+    public ResponseEntity<?> updateAbout(@RequestBody UpdateAboutDto dto) {
+        try {
+            UserInfoMinimalDto updated = userService.updateAbout(dto.getAbout());
+            return ResponseHelper.ok(updated, "Over mij bijgewerkt");
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.badRequest(e.getMessage());
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{username}/role")
     public ResponseEntity<?> updateUserRole(@PathVariable String username, @RequestBody UpdateUserRoleDto dto) {

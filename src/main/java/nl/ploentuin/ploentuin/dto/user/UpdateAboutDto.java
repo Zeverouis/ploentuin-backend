@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateAvatarDto {
-    String avatarUrl;
+public class UpdateAboutDto {
+    private String about;
 }

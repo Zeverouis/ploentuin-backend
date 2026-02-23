@@ -17,4 +17,5 @@ public class UserInfoMinimalDto {
     private Role role;
     private boolean banned;
     private String avatarUrl;
+    private String about;
 }

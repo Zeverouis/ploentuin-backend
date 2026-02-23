@@ -18,4 +18,5 @@ public class UserInfoPublicDto {
     private List<Planner> planners;
     private Role role;
     private String avatarUrl;
+    private String about;
 }

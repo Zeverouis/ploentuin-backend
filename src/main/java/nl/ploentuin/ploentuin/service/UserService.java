@@ -35,11 +35,11 @@ public class UserService {
 
     private UserInfoMinimalDto toMinimalDto(User u) {
         return new UserInfoMinimalDto(u.getId(), u.getUsername(),
-                u.isEmailVerified(), u.getEmail(), u.getRole(), u.isBanned(), u.getAvatarUrl());
+                u.isEmailVerified(), u.getEmail(), u.getRole(), u.isBanned(), u.getAvatarUrl(), u.getAbout());
     }
 
     private UserInfoPublicDto toPublicDto(User u) {
-        return new UserInfoPublicDto(u.getUsername(), u.getPlanners(), u.getRole(), u.getAvatarUrl());
+        return new UserInfoPublicDto(u.getUsername(), u.getPlanners(), u.getRole(), u.getAvatarUrl(), u.getAbout());
     }
 
     public UserInfoMinimalDto register(UserRegisterDto dto) {
@@ -58,6 +58,7 @@ public class UserService {
                 false,
                 User.Role.USER,
                 false,
+                null,
                 null
         );
 
@@ -157,6 +158,15 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
 
         user.setAvatarUrl(avatarUrl);
+        return toMinimalDto(userRepository.save(user));
+    }
+
+    public UserInfoMinimalDto updateAbout(String about) {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsernameIgnoreCase(currentUsername)
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
+
+        user.setAbout(about);
         return toMinimalDto(userRepository.save(user));
     }
 
