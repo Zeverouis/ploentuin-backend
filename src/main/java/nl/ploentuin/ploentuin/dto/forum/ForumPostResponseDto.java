@@ -25,6 +25,8 @@ public class ForumPostResponseDto {
     private boolean userBanned;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String role;
+    private String avatarUrl;
 
     private List<CommentResponseDto> comments;
     private List<ImageResponseDto> images;

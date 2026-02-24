@@ -56,6 +56,8 @@ public class ForumService {
                 post.getUser().isBanned(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
+                post.getUser().getRole().name(),
+                post.getUser().getAvatarUrl(),
                 comments,
                 images
         );
@@ -73,6 +75,8 @@ public class ForumService {
                 comment.getUser().isBanned(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt(),
+                comment.getUser().getRole().name(),
+                comment.getUser().getAvatarUrl(),
                 images
         );
     }

@@ -38,6 +38,7 @@ public class User {
 
     private String avatarUrl = "https://img.icons8.com/?size=100&id=14736&format=png&color=000000";
 
+    @Column(name = "about", columnDefinition = "TEXT")
     private String about;
 
     @Column
