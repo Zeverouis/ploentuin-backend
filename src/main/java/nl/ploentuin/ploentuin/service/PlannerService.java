@@ -10,6 +10,7 @@ import nl.ploentuin.ploentuin.repository.PlannerItemPlacementRepository;
 import nl.ploentuin.ploentuin.repository.PlannerRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,6 +107,7 @@ public class PlannerService {
         return getPlanners(user, "updated", false);
     }
 
+    @Transactional
     public PlannerInfoDto updatePlanner(int plannerId, UpdatePlannerDto dto, User user) {
         Planner planner = plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Planner niet gevonden"));

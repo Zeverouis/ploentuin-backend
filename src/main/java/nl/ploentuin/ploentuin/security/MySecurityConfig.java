@@ -1,7 +1,6 @@
 package nl.ploentuin.ploentuin.security;
 
 import javax.sql.DataSource;
-
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableMethodSecurity
@@ -59,58 +59,38 @@ public class MySecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-
-
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/info/categories/**", "/info/pages/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/info/categories/**", "/info/pages/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/info/categories/**", "/info/pages/**").hasRole("ADMIN")
+                        .requestMatchers("/users/*/role", "/users/*/delete", "/users/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/planner/catalog").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/planner/catalog").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/info/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/info/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/info/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/info/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/info/pages/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/info/pages/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/info/pages/**").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/forums/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/forums/categories/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/forums/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/forums/categories/**", "/forums/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/forums/posts/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/forums/**").authenticated()
-
-                        .requestMatchers("/users/register").permitAll()
-                        .requestMatchers("/users/verify-email").permitAll()
-                        .requestMatchers("/users/login").permitAll()
-                        .requestMatchers("/users/forgot-password").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/public/**").permitAll()
-                        .requestMatchers("/users/reset-password").permitAll()
-                        .requestMatchers("users/profile/**").permitAll()
-                        .requestMatchers("/users/*/change-password").authenticated()
-                        .requestMatchers("/users/me").authenticated()
-                        .requestMatchers("/users/email").authenticated()
-                        .requestMatchers("/users/user/*").authenticated()
-                        .requestMatchers("/users/*/role").hasRole("ADMIN")
-                        .requestMatchers("/users/*/delete").hasRole("ADMIN")
-                        .requestMatchers("/users/all").hasRole("ADMIN")
+                        .requestMatchers("/users/*/change-password", "/users/me", "/users/email", "/users/user/*").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/*").authenticated()
+                        .requestMatchers("/planner/*/claim", "/planner/save").authenticated()
 
+                        .requestMatchers("/users/register", "/users/verify-email", "/users/login", "/users/forgot-password", "/users/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/public/**", "/users/profile/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/info/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/forums/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/planner/catalog/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/planner/*/export/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/planner/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/planner/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/planner/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/planner/**").permitAll()
-                        .requestMatchers("/planner/*/claim").authenticated()
-                        .requestMatchers("/planner/save").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/planner/catalog").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/planner/catalog").hasRole("ADMIN")
-
-
 
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(
-                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS
-                ));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 

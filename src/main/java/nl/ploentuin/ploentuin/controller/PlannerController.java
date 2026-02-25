@@ -6,6 +6,7 @@ import nl.ploentuin.ploentuin.model.PlannerItemCatalog;
 import nl.ploentuin.ploentuin.model.User;
 import nl.ploentuin.ploentuin.repository.UserRepository;
 import nl.ploentuin.ploentuin.service.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,9 +53,7 @@ public class PlannerController {
     }
 
     @PatchMapping("/{plannerId}")
-    public ResponseEntity<?> updatePlanner(@PathVariable int plannerId,
-                                           @RequestBody UpdatePlannerDto dto,
-                                           Authentication auth) {
+    public ResponseEntity<?> updatePlanner(@PathVariable int plannerId, @RequestBody UpdatePlannerDto dto, Authentication auth) {
         User user = getCurrentUser(auth);
         try {
             PlannerInfoDto updated = plannerService.updatePlanner(plannerId, dto, user);
@@ -76,10 +75,7 @@ public class PlannerController {
     }
 
     @PostMapping("/{plannerId}/place")
-    public ResponseEntity<?> placeItem(@PathVariable int plannerId,
-                                       @RequestParam int catalogItemId,
-                                       @RequestParam int row,
-                                       @RequestParam int column) {
+    public ResponseEntity<?> placeItem(@PathVariable int plannerId, @RequestParam int catalogItemId, @RequestParam int row, @RequestParam int column) {
         try {
             PlannerItemPlacementDto placement = plannerService.placeItem(plannerId, catalogItemId, row, column);
             return ResponseHelper.ok(placement, "Item geplaatst in planner");
@@ -89,15 +85,12 @@ public class PlannerController {
     }
 
     @DeleteMapping("/{plannerId}/items/{placementId}")
-    public ResponseEntity<?> deletePlacement(@PathVariable int plannerId,
-                                             @PathVariable int placementId,
-                                             Authentication auth) {
+    public ResponseEntity<?> deletePlacement(@PathVariable int plannerId, @PathVariable int placementId, Authentication auth) {
         User user = getCurrentUser(auth);
         PlannerInfoDto planner = plannerService.getPlanner(plannerId);
         if (planner.getUserId() != -1 && (user == null || planner.getUserId() != user.getId())) {
             return ResponseHelper.forbidden("Deze planner is niet van jou!");
         }
-
         try {
             plannerService.removePlacement(placementId);
             return ResponseHelper.ok(null, "Object verwijderd");
@@ -133,7 +126,6 @@ public class PlannerController {
         if (user == null || user.getRole() != User.Role.ADMIN) {
             return ResponseHelper.forbidden("Je bent geen admin!");
         }
-
         plannerItemCatalogService.createItem(item);
         return ResponseHelper.created("Catalog item succesvol aangemaakt");
     }
@@ -145,58 +137,53 @@ public class PlannerController {
         if (user == null || user.getRole() != User.Role.ADMIN) {
             return ResponseHelper.forbidden("Je bent geen admin!");
         }
-
         PlannerItemCatalogDto deletedItem = plannerItemCatalogService.getById(item.getId());
         plannerItemCatalogService.deleteItem(item.getId());
-
         return ResponseHelper.ok(deletedItem, "Catalog item succesvol verwijderd");
     }
 
-
-    @GetMapping("/{plannerId}/export/png")
-    public ResponseEntity<byte[]> exportPlannerPng(@PathVariable int plannerId) {
-        byte[] png = plannerPngExportService.export(plannerId);
-
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"planner-" + plannerId + ".png\"")
-                .contentType(MediaType.IMAGE_PNG)
-                .body(png);
-    }
-
     @GetMapping("/{plannerId}/export/{format}")
-    public ResponseEntity<?> exportPlanner(@PathVariable int plannerId,
-                                           @PathVariable String format) {
+    public ResponseEntity<byte[]> exportPlanner(@PathVariable int plannerId, @PathVariable String format) {
         try {
             PlannerInfoDto planner = plannerService.getPlanner(plannerId);
             PlannerItemPlacementDto[][] grid = gridBuilder.buildGrid(planner);
 
             byte[] data;
-            String extension;
+            MediaType mediaType;
+            String extension = format.toLowerCase();
 
-            switch (format.toLowerCase()) {
+            switch (extension) {
+                case "png":
+                    data = plannerPngExportService.export(plannerId);
+                    mediaType = MediaType.IMAGE_PNG;
+                    break;
                 case "pdf":
-                    data = plannerExportService.exportPdf(planner, grid, 50);
-                    extension = "pdf";
+                    data = plannerExportService.exportPdf(planner, grid, 60);
+                    mediaType = MediaType.APPLICATION_PDF;
                     break;
                 case "word":
                 case "docx":
-                    data = plannerExportService.exportWord(planner, grid, 50);
+                    data = plannerExportService.exportWord(planner, grid, 60);
+                    mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
                     extension = "docx";
                     break;
                 case "excel":
                 case "xlsx":
-                    data = plannerExportService.exportExcel(planner, grid, 50);
+                    data = plannerExportService.exportExcel(planner, grid, 60);
+                    mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                     extension = "xlsx";
                     break;
                 default:
-                    return ResponseHelper.badRequest("Unsupported format: " + format);
+                    return ResponseEntity.badRequest().build();
             }
-            return ResponseHelper.ok(data, "Planner exported as ." + extension);
 
-        } catch (IllegalArgumentException e) {
-            return ResponseHelper.notFound(e.getMessage());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"planner-" + plannerId + "." + extension + "\"")
+                    .contentType(mediaType)
+                    .body(data);
+
         } catch (Exception e) {
-            return ResponseHelper.badRequest("Export failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
