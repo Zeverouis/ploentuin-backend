@@ -1,11 +1,20 @@
-INSERT INTO ploentuin_user (username, email, password, email_verified, role, email_verification_token, reset_token, banned, avatar_url, about)
+INSERT INTO ploentuin_user (id, username, email, password, email_verified, role, email_verification_token, reset_token, banned)
 VALUES
-    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false, NULL, 'Systeembeheerder van Ploentuin.'),
-    ('alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL, 'Hoi, ik ben Alice!'),
-    ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL, 'Bob hier, al 20 jaar vervent moestuinierder, ik weet nog hoe mijn opa.....'),
-    ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL, 'Bier en groente, lalalalala.'),
-    ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL, NULL),
-    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false, NULL, NULL);
+    (1, 'defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false),
+    (2, 'alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    (3, 'bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    (4, 'charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    (5, 'diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    (6, 'edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false);
+
+INSERT INTO user_profile (user_id, avatar_url, about)
+VALUES
+    (1, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', 'Systeembeheerder van Ploentuin.'),
+    (2, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', 'Hoi, ik ben Alice!'),
+    (3, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', 'Bob hier, al 20 jaar vervent moestuinierder, ik weet nog hoe mijn opa.....'),
+    (4, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', 'Bier en groente, lalalalala.'),
+    (5, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', NULL),
+    (6, 'https://img.icons8.com/?size=100&id=14736&format=png&color=000000', NULL);
 
 INSERT INTO planner_item_catalog (name, colour, image_url, type)
 VALUES
