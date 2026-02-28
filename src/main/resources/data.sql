@@ -1,11 +1,11 @@
-INSERT INTO ploentuin_user (id, username, email, password, email_verified, role, email_verification_token, reset_token, banned)
+INSERT INTO ploentuin_user (username, email, password, email_verified, role, email_verification_token, reset_token, banned)
 VALUES
-    (1, 'defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false),
-    (2, 'alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    (3, 'bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    (4, 'charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    (5, 'diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
-    (6, 'edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false);
+    ('defaultadmin', 'defaultadmin@totallyrealemail.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'ADMIN', NULL, NULL, false),
+    ('alice', 'alice@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    ('bob', 'bob@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'MOD', NULL, NULL, false),
+    ('charlie', 'charlie@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    ('diana', 'diana@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false),
+    ('edward', 'edward@example.com', '$2a$12$iKDBnRO27pw7Qf0yWRb51OraPrmbjsH8U6nL1.ji0AvSzMZJOC.RS', true, 'USER', NULL, NULL, false);
 
 INSERT INTO user_profile (user_id, avatar_url, about)
 VALUES
