@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,10 +66,7 @@ public class UserService {
         user.setEmailVerificationToken(verificationToken);
         User savedUser = userRepository.save(user);
 
-        emailService.sendVerificationEmail(
-                savedUser.getEmail(),
-                verificationToken
-        );
+        emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
 
         return toMinimalDto(savedUser);
     }
@@ -152,21 +150,27 @@ public class UserService {
         return toMinimalDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserInfoMinimalDto updateAvatar(String avatarUrl) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsernameIgnoreCase(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
 
-        user.setAvatarUrl(avatarUrl);
+        if (user.getUserProfile() != null) {
+            user.getUserProfile().setAvatarUrl(avatarUrl);
+        }
         return toMinimalDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserInfoMinimalDto updateAbout(String about) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsernameIgnoreCase(currentUsername)
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker niet gevonden"));
 
-        user.setAbout(about);
+        if (user.getUserProfile() != null) {
+            user.getUserProfile().setAbout(about);
+        }
         return toMinimalDto(userRepository.save(user));
     }
 
